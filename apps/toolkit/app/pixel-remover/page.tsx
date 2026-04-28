@@ -1,0 +1,111 @@
+"use client";
+
+import { useBatchProcessor } from './_hooks/useBatchProcessor';
+import { themes } from './_themes';
+import { Hero } from './_components/Hero';
+import { Viewer } from './_components/Viewer';
+import { StatusBar } from './_components/StatusBar';
+import { ThumbnailStrip } from './_components/ThumbnailStrip';
+import { ControlRow } from './_components/ControlRow';
+import { DragOverlay } from './_components/DragOverlay';
+
+export default function Home() {
+  const t = themes.pixel;
+  const {
+    batchItems,
+    selectedIndex,
+    setSelectedIndex,
+    compareSlider,
+    setCompareSlider,
+    isDragging,
+    isDownloading,
+    modelStatus,
+    modelProgress,
+    selectedItem,
+    batchStatus,
+    batchStats,
+    overallPercentage,
+    fileInputRef,
+    handleFiles,
+    handleDownloadAll,
+    handleClearCache,
+    handleRetryModel,
+  } = useBatchProcessor();
+
+  return (
+    <main className={`min-h-screen ${t.bg} ${t.font} antialiased overflow-x-hidden relative`}>
+      <DragOverlay isDragging={isDragging} />
+
+      <nav className={`${t.nav} sticky top-0 z-50 backdrop-blur-md px-4 py-2 flex justify-between items-center`}>
+        <a
+          href="https://pebblylabs.com"
+          className="group inline-flex items-center gap-1.5 font-black uppercase tracking-[0.15em] text-[10px] text-[#00ff00] opacity-70 hover:opacity-100 transition-opacity"
+          title="Back to Pebbly Labs"
+        >
+          <span className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+            ←
+          </span>
+          <span>PB TOOLKIT _ PIXEL_V1.0</span>
+        </a>
+        <div className="flex items-center gap-1.5 text-[9px] font-black text-[#00ff00] uppercase tracking-[0.15em]">
+          <span className={batchStatus === 'processing' ? 'animate-pulse' : ''}>
+            {batchStatus === 'idle' ? '○' : batchStatus === 'processing' ? '●' : '✓'}
+          </span>
+          <span>[{batchStatus.toUpperCase()}]</span>
+        </div>
+      </nav>
+
+      <div className="max-w-[480px] md:max-w-[1000px] w-full mx-auto h-[calc(100vh-40px)] px-4 md:px-8 py-3 md:py-5 flex flex-col gap-2 md:gap-3 overflow-hidden">
+        <div className="flex-shrink-0">
+          <Hero />
+        </div>
+        <Viewer
+          selectedItem={selectedItem}
+          compareSlider={compareSlider}
+          onCompareChange={setCompareSlider}
+          onFileInputClick={() => fileInputRef.current?.click()}
+        />
+        <div className="flex-shrink-0">
+          <StatusBar
+            modelStatus={modelStatus}
+            modelProgress={modelProgress}
+            batchStatus={batchStatus}
+            batchStats={batchStats}
+            overallPercentage={overallPercentage}
+            onRetryModel={handleRetryModel}
+          />
+        </div>
+        <div className="flex-shrink-0">
+          <ThumbnailStrip
+            items={batchItems}
+            selectedIndex={selectedIndex}
+            onSelect={(idx) => {
+              setSelectedIndex(idx);
+              setCompareSlider(50);
+            }}
+            onAdd={() => fileInputRef.current?.click()}
+          />
+        </div>
+        <div className="flex-shrink-0">
+          <ControlRow
+            completedCount={batchStats.completed}
+            isDownloading={isDownloading}
+            onDownload={handleDownloadAll}
+            onClear={handleClearCache}
+          />
+        </div>
+        <div className="flex-shrink-0 text-center text-[9px] opacity-40 tracking-[0.25em] font-black text-[#00ff00]">
+          🔒 100% LOCAL · NO UPLOAD · ZERO SERVER
+        </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          multiple
+          accept="image/*"
+          onChange={(e) => e.target.files && handleFiles(e.target.files)}
+        />
+      </div>
+    </main>
+  );
+}

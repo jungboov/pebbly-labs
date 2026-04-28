@@ -1,4 +1,4 @@
-import type { BatchItem } from '../hooks/useBatchProcessor';
+import type { BatchItem } from '../_hooks/useBatchProcessor';
 import { PixelGauge } from './PixelGauge';
 
 interface ThumbnailStripProps {
