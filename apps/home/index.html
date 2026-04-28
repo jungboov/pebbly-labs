@@ -4,44 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Primary Meta Tags -->
   <title>Pebbly Labs — Privacy-First Tools for Creators</title>
-  <meta name="title" content="Pebbly Labs — Privacy-First Tools for Creators">
   <meta name="description" content="Browser-based tools that run 100% locally. No uploads, no servers, no tracking. Free and open. Built by creators, for creators.">
-  <meta name="keywords" content="Pebbly, Pebbly Labs, privacy, browser tools, local AI, no upload, image editor">
-  <meta name="author" content="Pebbly Labs">
   <meta name="theme-color" content="#00ff00">
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pebblylabs.com/">
-  <meta property="og:title" content="Pebbly Labs — Privacy-First Tools for Creators">
-  <meta property="og:description" content="Browser-based tools that run 100% locally. No uploads, no servers, no tracking. Free and open.">
-  <meta property="og:image" content="https://pebblylabs.com/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Pebbly Labs — Privacy-First Tools">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="ko_KR">
-  <meta property="og:site_name" content="Pebbly Labs">
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://pebblylabs.com/">
-  <meta property="twitter:title" content="Pebbly Labs — Privacy-First Tools for Creators">
-  <meta property="twitter:description" content="Browser-based tools that run 100% locally. No uploads. No servers. No tracking.">
-  <meta property="twitter:image" content="https://pebblylabs.com/og-image.png">
-  <meta property="twitter:site" content="@pebblylabs">
-
-  <!-- Canonical -->
-  <link rel="canonical" href="https://pebblylabs.com/">
-
-  <!-- Favicons -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -49,15 +15,12 @@
       background: #0a0a0a;
       color: #00ff00;
       font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      padding: 2rem 1.5rem;
+      padding: 5rem 1.5rem 4rem;
       position: relative;
     }
     
-    /* ───── 한국어 안내 배너 (상단) ───── */
+    /* ───── 한국어 안내 배너 ───── */
     .ko-banner {
       position: fixed;
       top: 0;
@@ -116,7 +79,7 @@
       to { transform: translateY(0); opacity: 1; }
     }
     
-    /* ───── 언어 토글 (우상단) ───── */
+    /* ───── 언어 토글 ───── */
     .lang-switch {
       position: fixed;
       top: 1.5rem;
@@ -156,25 +119,30 @@
       opacity: 1;
     }
     
-    /* ───── 메인 콘텐츠 ───── */
+    /* ───── 메인 컨테이너 ───── */
     .container {
-      max-width: 680px;
-      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
       transition: opacity 0.2s;
     }
     
     .container.switching { opacity: 0.3; }
     
+    /* ───── Hero 섹션 ───── */
+    .hero {
+      margin-bottom: 4rem;
+    }
+    
     .brand {
       font-size: clamp(1.5rem, 4vw, 2.5rem);
       letter-spacing: 0.35em;
       font-weight: 900;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
       opacity: 0.95;
     }
     
     .line {
-      margin: 0.9rem 0;
+      margin: 0.7rem 0;
       font-size: 0.9rem;
       letter-spacing: 0.08em;
       line-height: 1.75;
@@ -183,171 +151,152 @@
     
     .line::before { content: "> "; opacity: 0.5; }
     
-    .products {
-      margin-top: 3rem;
-      padding-top: 2rem;
+    /* ───── Tools 섹션 ───── */
+    .tools-section {
+      margin-bottom: 3rem;
+      padding-top: 2.5rem;
       border-top: 1px solid rgba(0, 255, 0, 0.2);
     }
     
-    .product-label {
+    .section-label {
       font-size: 0.7rem;
       letter-spacing: 0.3em;
       opacity: 0.5;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       font-weight: 900;
     }
     
-    .product-link {
-      display: inline-block;
-      font-size: 1rem;
-      color: #00ff00;
-      text-decoration: none;
-      border-bottom: 1px solid #00ff00;
-      padding: 0.3rem 0;
-      transition: all 0.2s;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-    
-    .product-link:hover {
-      background: #00ff00;
-      color: #0a0a0a;
-      padding: 0.3rem 0.6rem;
-      border-bottom: none;
-    }
-    
-    /* ───── NEW: Coming Next 섹션 (Mouse) - Variant B (label outside box) ───── */
-    .coming-next-section {
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(0, 255, 0, 0.2);
-    }
-    
-    /* Label like .product-label (// LIVE_PRODUCTS) - same style */
-    .coming-next-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      opacity: 0.5;
-      margin-bottom: 1rem;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    
-    .coming-next-label::before {
-      content: "●";
-      color: #00ff00;
-      animation: pulse 2s infinite;
-      font-size: 0.6rem;
-    }
-    
-    .coming-next-tag {
-      background: rgba(0, 255, 0, 0.15);
-      border: 1px solid rgba(0, 255, 0, 0.4);
-      color: #00ff00;
-      padding: 2px 8px;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      font-weight: 900;
-      margin-left: auto;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    
-    /* The box itself */
-    .coming-next {
-      display: block;
-      padding: 1.2rem 1.5rem;
-      border: 1px dashed rgba(0, 255, 0, 0.3);
-      background: linear-gradient(135deg, rgba(0, 255, 0, 0.03), rgba(0, 170, 255, 0.03));
-      transition: all 0.2s;
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
-      position: relative;
-    }
-    
-    .coming-next:hover {
-      border-color: #00ff00;
-      border-style: solid;
-      background: linear-gradient(135deg, rgba(0, 255, 0, 0.06), rgba(0, 170, 255, 0.06));
-    }
-    
-    .coming-next-row {
-      display: flex;
-      align-items: center;
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
     }
     
-    .coming-next-bot {
-      flex-shrink: 0;
-      width: 36px;
-      height: 36px;
-      animation: botBob 2s ease-in-out infinite;
+    .tool-card {
+      display: block;
+      padding: 1.5rem;
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      background: rgba(0, 255, 0, 0.02);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
     }
     
-    .coming-next-bot svg {
+    .tool-card.live:hover {
+      border-color: #00ff00;
+      background: rgba(0, 255, 0, 0.05);
+      transform: translateY(-2px);
+    }
+    
+    .tool-card.preview {
+      border-style: dashed;
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.02), rgba(0, 170, 255, 0.02));
+    }
+    
+    .tool-card.preview:hover {
+      border-style: solid;
+      border-color: #00ff00;
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.05), rgba(0, 170, 255, 0.05));
+      transform: translateY(-2px);
+    }
+    
+    .tool-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    
+    .tool-icon svg {
       width: 100%;
       height: 100%;
       image-rendering: pixelated;
       shape-rendering: crispEdges;
     }
     
+    .tool-icon.live svg { filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.4)); }
+    
+    .tool-icon.bot { animation: botBob 2s ease-in-out infinite; }
+    
     @keyframes botBob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-3px); }
     }
     
-    .coming-next-info {
-      flex: 1;
+    .tool-status {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      padding: 3px 8px;
+      font-weight: 900;
+      border: 1px solid;
     }
     
-    .coming-next-title {
-      font-size: 1rem;
+    .tool-status.live {
+      background: rgba(0, 255, 0, 0.15);
+      border-color: rgba(0, 255, 0, 0.4);
       color: #00ff00;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.3rem;
     }
     
-    .coming-next-desc {
+    .tool-status.preview {
+      background: rgba(0, 170, 255, 0.1);
+      border-color: rgba(0, 170, 255, 0.3);
+      color: #00aaff;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .tool-name {
+      font-size: 1.1rem;
+      color: #00ff00;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tool-desc {
       font-size: 0.75rem;
-      opacity: 0.6;
+      opacity: 0.7;
       letter-spacing: 0.05em;
-      line-height: 1.5;
+      line-height: 1.6;
+      margin-bottom: 1rem;
     }
     
-    .coming-next-arrow {
-      color: #00ff00;
-      font-size: 1.2rem;
-      opacity: 0.5;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-    
-    .coming-next:hover .coming-next-arrow {
-      opacity: 1;
-      transform: translateX(4px);
-    }
-    
-    .coming-next-meta {
-      margin-top: 1rem;
+    .tool-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding-top: 0.8rem;
       border-top: 1px dashed rgba(0, 255, 0, 0.15);
-      font-size: 0.7rem;
-      opacity: 0.45;
+      font-size: 0.65rem;
       letter-spacing: 0.15em;
+      opacity: 0.5;
       font-weight: 700;
     }
     
-    /* ───────────────────────────────────────── */
+    .tool-arrow {
+      color: #00ff00;
+      transition: transform 0.2s;
+    }
     
+    .tool-card:hover .tool-arrow {
+      transform: translateX(3px);
+    }
+    
+    /* ───── Coming Soon 섹션 ───── */
     .coming-soon {
-      margin-top: 3rem;
+      margin: 3rem 0 2rem;
       font-size: 0.75rem;
       opacity: 0.35;
       letter-spacing: 0.3em;
@@ -369,7 +318,33 @@
       51%, 100% { opacity: 0; }
     }
     
-    /* 푸터 */
+    /* ───── About 섹션 ───── */
+    .about {
+      padding-top: 2rem;
+      border-top: 1px solid rgba(0, 255, 0, 0.2);
+      margin-top: 3rem;
+    }
+    
+    .about p {
+      font-size: 0.8rem;
+      opacity: 0.65;
+      line-height: 1.8;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.8rem;
+    }
+    
+    .about a {
+      color: #00ff00;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .about a:hover {
+      border-bottom-color: #00ff00;
+    }
+    
+    /* ───── Footer ───── */
     .footer {
       position: fixed;
       bottom: 1rem;
@@ -382,19 +357,20 @@
       font-weight: 700;
     }
     
-    /* 모바일 대응 */
+    /* ───── 모바일 ───── */
     @media (max-width: 640px) {
       .ko-banner {
         font-size: 0.7rem;
         gap: 8px;
         padding: 8px 12px;
       }
-      .ko-banner-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex-shrink: 1;
-        min-width: 0;
+      
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .brand {
+        font-size: 1.5rem;
       }
     }
   </style>
@@ -403,10 +379,10 @@
 <body>
   
   <!-- 한국어 안내 배너 -->
-  <div class="ko-banner" id="koBanner" role="banner">
+  <div class="ko-banner" id="koBanner">
     <span class="ko-banner-text">💬 이 페이지를 한국어로 볼 수 있습니다</span>
     <button class="ko-banner-btn" id="koBannerAccept">VIEW IN KOREAN</button>
-    <button class="ko-banner-close" id="koBannerClose" aria-label="Close">×</button>
+    <button class="ko-banner-close" id="koBannerClose">×</button>
   </div>
   
   <!-- 언어 토글 -->
@@ -418,90 +394,138 @@
   <!-- 컨테이너 -->
   <div class="container" id="container">
     
-    <h1 class="brand">// PEBBLY LABS</h1>
-    
-    <p class="line" 
-       data-en="We build privacy-first tools that run entirely in your browser"
-       data-ko="브라우저에서 바로 작동하는 프라이버시-퍼스트 도구를 만듭니다">
-      We build privacy-first tools that run entirely in your browser
-    </p>
-    
-    <p class="line"
-       data-en="No uploads. No servers. Your data stays on your device"
-       data-ko="업로드 없음. 서버 없음. 데이터는 당신의 기기에만 머뭅니다">
-      No uploads. No servers. Your data stays on your device
-    </p>
-    
-    <p class="line"
-       data-en="Open · Developer-friendly · Free to start"
-       data-ko="오픈 · 개발자 친화적 · 무료로 시작">
-      Open · Developer-friendly · Free to start
-    </p>
-    
-    <div class="products">
-      <div class="product-label">// LIVE_PRODUCTS</div>
-      <a href="https://toolkit.pebblylabs.com" class="product-link">
-        Pebbly Toolkit → Pixel Remover
-      </a>
+    <!-- Hero -->
+    <div class="hero">
+      <h1 class="brand">// PEBBLY LABS</h1>
+      
+      <p class="line"
+         data-en="We build privacy-first tools that run entirely in your browser"
+         data-ko="브라우저에서 바로 작동하는 프라이버시-퍼스트 도구를 만듭니다">
+        We build privacy-first tools that run entirely in your browser
+      </p>
+      
+      <p class="line"
+         data-en="No uploads. No servers. Your data stays on your device"
+         data-ko="업로드 없음. 서버 없음. 데이터는 당신의 기기에만 머뭅니다">
+        No uploads. No servers. Your data stays on your device
+      </p>
     </div>
     
-    <!-- ╔══ NEW: COMING_NEXT 섹션 (Pixel Mouse 비전) - Variant B v2 ══╗ -->
-    <div class="coming-next-section">
-      <div class="coming-next-label">
-        <span data-en="// COMING_NEXT" data-ko="// COMING_NEXT">// COMING_NEXT</span>
-        <span class="coming-next-tag" data-en="PREVIEW" data-ko="프리뷰">PREVIEW</span>
+    <!-- Tools Grid -->
+    <div class="tools-section">
+      <div class="section-label">// TOOLS</div>
+      
+      <div class="tools-grid">
+        
+        <!-- ═══ Pixel Remover (LIVE) ═══ -->
+        <a href="https://toolkit.pebblylabs.com/pixel-remover" class="tool-card live">
+          <div class="tool-card-header">
+            <div class="tool-icon live">
+              <svg viewBox="0 0 16 16">
+                <!-- Pixel grid icon -->
+                <rect x="1" y="1" width="3" height="3" fill="#00ff00"/>
+                <rect x="6" y="1" width="3" height="3" fill="#00ff00" opacity="0.5"/>
+                <rect x="11" y="1" width="3" height="3" fill="#00ff00"/>
+                
+                <rect x="1" y="6" width="3" height="3" fill="#00ff00" opacity="0.5"/>
+                <rect x="11" y="6" width="3" height="3" fill="#00ff00" opacity="0.5"/>
+                
+                <rect x="1" y="11" width="3" height="3" fill="#00ff00"/>
+                <rect x="6" y="11" width="3" height="3" fill="#00ff00" opacity="0.5"/>
+                <rect x="11" y="11" width="3" height="3" fill="#00ff00"/>
+                
+                <!-- X mark in middle -->
+                <rect x="6" y="6" width="1" height="1" fill="#ff4444"/>
+                <rect x="8" y="6" width="1" height="1" fill="#ff4444"/>
+                <rect x="7" y="7" width="1" height="1" fill="#ff4444"/>
+                <rect x="6" y="8" width="1" height="1" fill="#ff4444"/>
+                <rect x="8" y="8" width="1" height="1" fill="#ff4444"/>
+              </svg>
+            </div>
+            <span class="tool-status live"
+                  data-en="LIVE"
+                  data-ko="라이브">LIVE</span>
+          </div>
+          
+          <div class="tool-name">Pixel Remover</div>
+          
+          <p class="tool-desc"
+             data-en="Remove pixels from images, locally and instantly. No uploads, no waiting."
+             data-ko="이미지에서 픽셀을 즉시 제거. 업로드도 대기도 없이.">
+            Remove pixels from images, locally and instantly. No uploads, no waiting.
+          </p>
+          
+          <div class="tool-meta">
+            <span data-en="FREE · OPEN" data-ko="무료 · 오픈">FREE · OPEN</span>
+            <span class="tool-arrow">→</span>
+          </div>
+        </a>
+        
+        <!-- ═══ Pixel Mouse (PREVIEW) ═══ -->
+        <a href="https://toolkit.pebblylabs.com/mouse" class="tool-card preview">
+          <div class="tool-card-header">
+            <div class="tool-icon bot">
+              <svg viewBox="-1 -1 15 16">
+                <rect x="2" y="0" width="9" height="1" fill="#00ff00"/>
+                <rect x="1" y="1" width="11" height="5" fill="#00ff00"/>
+                <rect x="0" y="6" width="13" height="1" fill="#00ff00"/>
+                <rect x="0" y="7" width="1" height="4" fill="#00ff00"/>
+                <rect x="2" y="7" width="9" height="4" fill="#00ff00"/>
+                <rect x="12" y="7" width="1" height="4" fill="#00ff00"/>
+                <rect x="0" y="11" width="13" height="1" fill="#00ff00"/>
+                <rect x="3" y="12" width="2" height="2" fill="#00ff00"/>
+                <rect x="8" y="12" width="2" height="2" fill="#00ff00"/>
+                <rect x="3" y="2" width="2" height="2" fill="#ffffff"/>
+                <rect x="3" y="3" width="2" height="1" fill="#00aaff"/>
+                <rect x="8" y="2" width="2" height="2" fill="#ffffff"/>
+                <rect x="8" y="3" width="2" height="1" fill="#00aaff"/>
+                <rect x="4" y="5" width="5" height="1" fill="#007700"/>
+              </svg>
+            </div>
+            <span class="tool-status preview"
+                  data-en="● PREVIEW"
+                  data-ko="● 프리뷰">● PREVIEW</span>
+          </div>
+          
+          <div class="tool-name">Pixel Mouse</div>
+          
+          <p class="tool-desc"
+             data-en="Desktop automation companion. A walking pixel character that records your macros."
+             data-ko="데스크탑 자동화 컴패니언. 매크로를 기록해주는 걸어다니는 픽셀 캐릭터.">
+            Desktop automation companion. A walking pixel character that records your macros.
+          </p>
+          
+          <div class="tool-meta">
+            <span data-en="LATE 2026 · BUILDING IN PUBLIC" 
+                  data-ko="2026년 하반기 · 공개 개발">LATE 2026 · BUILDING IN PUBLIC</span>
+            <span class="tool-arrow">→</span>
+          </div>
+        </a>
+        
       </div>
-      <a href="https://toolkit.pebblylabs.com/mouse" class="coming-next">
-        <div class="coming-next-row">
-          <div class="coming-next-bot">
-            <svg viewBox="-1 -1 15 16">
-              <rect x="2" y="0" width="9" height="1" fill="#00ff00"/>
-              <rect x="1" y="1" width="11" height="5" fill="#00ff00"/>
-              <rect x="0" y="6" width="13" height="1" fill="#00ff00"/>
-              <rect x="0" y="7" width="1" height="4" fill="#00ff00"/>
-              <rect x="2" y="7" width="9" height="4" fill="#00ff00"/>
-              <rect x="12" y="7" width="1" height="4" fill="#00ff00"/>
-              <rect x="0" y="11" width="13" height="1" fill="#00ff00"/>
-              <rect x="3" y="12" width="2" height="2" fill="#00ff00"/>
-              <rect x="8" y="12" width="2" height="2" fill="#00ff00"/>
-              <rect x="3" y="2" width="2" height="2" fill="#ffffff"/>
-              <rect x="3" y="3" width="2" height="1" fill="#00aaff"/>
-              <rect x="8" y="2" width="2" height="2" fill="#ffffff"/>
-              <rect x="8" y="3" width="2" height="1" fill="#00aaff"/>
-              <rect x="4" y="5" width="5" height="1" fill="#007700"/>
-            </svg>
-          </div>
-          <div class="coming-next-info">
-            <div class="coming-next-title"
-                 data-en="Pebbly Pixel Mouse"
-                 data-ko="Pebbly Pixel Mouse">
-              Pebbly Pixel Mouse
-            </div>
-            <div class="coming-next-desc"
-                 data-en="Desktop automation companion. Walking pixel character that records your macros."
-                 data-ko="데스크탑 자동화 컴패니언. 매크로를 기록해주는 걸어다니는 픽셀 캐릭터.">
-              Desktop automation companion. Walking pixel character that records your macros.
-            </div>
-          </div>
-          <div class="coming-next-arrow">→</div>
-        </div>
-        <div class="coming-next-meta"
-             data-en="LATE 2026 · BUILDING IN PUBLIC"
-             data-ko="2026년 하반기 · 공개 개발">
-          LATE 2026 · BUILDING IN PUBLIC
-        </div>
-      </a>
     </div>
-    <!-- ╚══════════════════════════════════════════╝ -->
     
+    <!-- Coming Soon -->
     <div class="coming-soon">
       MORE_TOOLS_COMING<span class="cursor"></span>
     </div>
     
+    <!-- About -->
+    <div class="about">
+      <p data-en="Open · Developer-friendly · Free to start"
+         data-ko="오픈 · 개발자 친화적 · 무료로 시작">
+        Open · Developer-friendly · Free to start
+      </p>
+      <p data-en="Built in public from Seoul 🇰🇷"
+         data-ko="서울에서 공개 개발 중 🇰🇷">
+        Built in public from Seoul 🇰🇷
+      </p>
+    </div>
+    
   </div>
   
-  <!-- 푸터 -->
-  <div class="footer" 
+  <!-- Footer -->
+  <div class="footer"
        data-en="© 2026 PEBBLY LABS · PRIVACY BY DEFAULT"
        data-ko="© 2026 PEBBLY LABS · 프라이버시를 기본으로">
     © 2026 PEBBLY LABS · PRIVACY BY DEFAULT
@@ -525,18 +549,8 @@
           const newText = el.dataset[lang];
           if (newText) {
             const cursor = el.querySelector('.cursor');
-            const bot = el.querySelector('.coming-next-bot');
-            
-            // For elements with child nodes we want to preserve, only update text
-            if (el.querySelector('span[data-en]')) {
-              return; // skip parents that contain translatable children
-            }
-            
-            // Save children we want to keep
-            const childToKeep = bot || cursor;
-            
             el.textContent = newText;
-            if (childToKeep) el.appendChild(childToKeep);
+            if (cursor) el.appendChild(cursor);
           }
         });
         
