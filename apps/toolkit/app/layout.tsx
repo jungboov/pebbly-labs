@@ -15,22 +15,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolkit.pebblylabs.com"),
   title: {
-    default: "Pixel Remover — AI Background Removal in Your Browser | Pebbly Toolkit",
+    default: "Pebbly Toolkit — Privacy-First Tools for Creators",
     template: "%s | Pebbly Toolkit",
   },
   description:
-    "AI-powered background removal that runs 100% in your browser. No uploads, no servers, no tracking. Free and privacy-first. Built by Pebbly Labs.",
+    "Browser-based creator tools that run 100% locally. No uploads, no servers, no tracking. Free and open. Built by Pebbly Labs.",
   keywords: [
-    "background removal",
-    "AI image editor",
-    "remove background",
-    "transparent PNG",
+    "creator tools",
+    "browser tools",
     "privacy-first",
-    "browser-based",
-    "no upload",
     "local AI",
+    "no upload",
     "Pebbly",
-    "free background remover",
+    "Pebbly Toolkit",
   ],
   authors: [{ name: "Pebbly Labs", url: "https://pebblylabs.com" }],
   creator: "Pebbly Labs",
@@ -42,15 +39,15 @@ export const metadata: Metadata = {
     alternateLocale: ["ko_KR"],
     url: "https://toolkit.pebblylabs.com",
     siteName: "Pebbly Toolkit",
-    title: "Pixel Remover — AI Background Removal in Your Browser",
+    title: "Pebbly Toolkit — Privacy-First Tools for Creators",
     description:
-      "Remove image backgrounds with AI, entirely in your browser. No uploads. No servers. 100% private. Free forever.",
+      "Browser-based creator tools that run 100% locally. No uploads, no servers, no tracking. Free and open.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Pebbly Pixel Remover — AI Background Removal",
+        alt: "Pebbly Toolkit — Privacy-First Tools for Creators",
         type: "image/png",
       },
     ],
@@ -60,9 +57,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@pebblylabs",
     creator: "@pebblylabs",
-    title: "Pixel Remover — AI Background Removal in Your Browser",
+    title: "Pebbly Toolkit — Privacy-First Tools for Creators",
     description:
-      "Remove backgrounds with AI. Runs locally. No uploads. No servers. 100% private. Free.",
+      "Browser-based creator tools that run 100% locally. No uploads. No servers. 100% private. Free.",
     images: ["/og-image.png"],
   },
 
@@ -84,10 +81,6 @@ export const metadata: Metadata = {
       { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: "/apple-touch-icon.png",
-  },
-
-  alternates: {
-    canonical: "https://toolkit.pebblylabs.com",
   },
 
   category: "technology",

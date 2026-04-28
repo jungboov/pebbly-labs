@@ -1,4 +1,4 @@
-import type { BatchItem } from '../hooks/useBatchProcessor';
+import type { BatchItem } from '../_hooks/useBatchProcessor';
 import { BotLoader } from './BotLoader';
 
 interface ViewerProps {
