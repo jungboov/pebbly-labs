@@ -1,0 +1,81 @@
+.donateFloat {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.donateFloat:hover {
+  border-color: rgba(0, 255, 0, 0.6);
+  box-shadow: 0 4px 30px rgba(0, 255, 0, 0.2);
+  padding-right: 18px;
+}
+
+.donateFloatBot {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  animation: floatDonateBob 2s ease-in-out infinite;
+}
+
+.donateFloatBot svg {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  shape-rendering: crispEdges;
+}
+
+@keyframes floatDonateBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.donateFloatText {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+  margin-left: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: #00ff00;
+  text-transform: uppercase;
+}
+
+.donateFloat:hover .donateFloatText {
+  max-width: 200px;
+  opacity: 1;
+  margin-left: 12px;
+}
+
+@media (max-width: 640px) {
+  .donateFloat {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px;
+  }
+  .donateFloatBot {
+    width: 32px;
+    height: 32px;
+  }
+  .donateFloat:hover .donateFloatText {
+    max-width: 150px;
+    font-size: 10px;
+  }
+}
