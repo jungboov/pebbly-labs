@@ -257,6 +257,81 @@ html, body { background: #0a0a0a; min-height: 100vh; font-family: 'JetBrains Mon
 .modal-hotkey { display: flex; gap: 4px; align-items: center; }
 .modal-hotkey-key { background: #1a1a1a; border: 1px solid rgba(0,255,0,0.3); padding: 4px 10px; font-size: 10px; color: #00ff00; font-family: monospace; font-weight: 900; }
 
+/* ===== Floating Donate BOT Button ===== */
+.donate-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.donate-float:hover {
+  border-color: rgba(0, 255, 0, 0.6);
+  box-shadow: 0 4px 30px rgba(0, 255, 0, 0.2);
+  padding-right: 18px;
+}
+.donate-float-bot {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  animation: floatDonateBob 2s ease-in-out infinite;
+}
+.donate-float-bot svg {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  shape-rendering: crispEdges;
+}
+@keyframes floatDonateBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.donate-float-text {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+  margin-left: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: #00ff00;
+  text-transform: uppercase;
+}
+.donate-float:hover .donate-float-text {
+  max-width: 200px;
+  opacity: 1;
+  margin-left: 12px;
+}
+@media (max-width: 640px) {
+  .donate-float {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px;
+  }
+  .donate-float-bot {
+    width: 32px;
+    height: 32px;
+  }
+  .donate-float:hover .donate-float-text {
+    max-width: 150px;
+    font-size: 10px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1004,6 +1079,28 @@ document.addEventListener('keydown', (e) => {
 
 </script>
 
+<!-- Floating Donate Button -->
+<a href="https://paypal.me/pebblylabs" target="_blank" rel="noopener" class="donate-float" aria-label="Support Pebbly Labs">
+  <div class="donate-float-bot">
+    <svg viewBox="-1 -1 15 16">
+      <rect x="2" y="0" width="9" height="1" fill="#00ff00"/>
+      <rect x="1" y="1" width="11" height="5" fill="#00ff00"/>
+      <rect x="0" y="6" width="13" height="1" fill="#00ff00"/>
+      <rect x="0" y="7" width="1" height="4" fill="#00ff00"/>
+      <rect x="2" y="7" width="9" height="4" fill="#00ff00"/>
+      <rect x="12" y="7" width="1" height="4" fill="#00ff00"/>
+      <rect x="0" y="11" width="13" height="1" fill="#00ff00"/>
+      <rect x="3" y="12" width="2" height="2" fill="#00ff00"/>
+      <rect x="8" y="12" width="2" height="2" fill="#00ff00"/>
+      <rect x="3" y="2" width="2" height="2" fill="#ffffff"/>
+      <rect x="3" y="3" width="2" height="1" fill="#00aaff"/>
+      <rect x="8" y="2" width="2" height="2" fill="#ffffff"/>
+      <rect x="8" y="3" width="2" height="1" fill="#00aaff"/>
+      <rect x="4" y="5" width="5" height="1" fill="#007700"/>
+    </svg>
+  </div>
+  <span class="donate-float-text">SUPPORT {BOT}</span>
+</a>
 
 </body>
 </html>
