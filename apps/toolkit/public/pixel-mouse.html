@@ -42,7 +42,7 @@ body {
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   font-size: 12px;
   letter-spacing: 0.2em;
   font-weight: 900;
@@ -55,6 +55,34 @@ body {
   height: 28px;
   image-rendering: pixelated;
   shape-rendering: crispEdges;
+  animation: navBotBob 2s ease-in-out infinite;
+  transition: filter 0.3s ease;
+}
+
+@keyframes navBotBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.nav-logo:hover svg,
+.nav-logo:focus-visible svg {
+  filter: drop-shadow(0 0 12px rgba(0, 255, 0, 0.8));
+}
+
+.nav-logo span {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: 0;
+  transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+.nav-logo:hover span,
+.nav-logo:focus-visible span {
+  max-width: 200px;
+  opacity: 1;
+  margin-left: 10px;
 }
 
 .nav-links {
@@ -916,7 +944,7 @@ body {
         <rect x="8" y="3" width="2" height="1" fill="#00aaff"/>
         <rect x="4" y="5" width="5" height="1" fill="#007700"/>
       </svg>
-      PEBBLY LABS
+      <span>PEBBLY LABS</span>
     </a>
     <div class="nav-links">
       <a href="https://toolkit.pebblylabs.com">PIXEL_REMOVER</a>
