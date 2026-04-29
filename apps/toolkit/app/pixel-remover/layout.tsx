@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DonateFloat from "./_components/DonateFloat";
 
 export const metadata: Metadata = {
   title: "Pixel Remover — AI Background Removal in Your Browser",
@@ -50,5 +51,10 @@ export default function PixelRemoverLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <DonateFloat />
+    </>
+  );
 }

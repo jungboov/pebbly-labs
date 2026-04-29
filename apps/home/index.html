@@ -52,22 +52,44 @@
     .nav-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0;
       font-size: 12px;
       letter-spacing: 0.2em;
       font-weight: 900;
       color: #00ff00;
       text-decoration: none;
     }
-    
+
     .nav-logo svg {
       width: 28px;
       height: 28px;
       image-rendering: pixelated;
       shape-rendering: crispEdges;
       animation: navBotBob 2s ease-in-out infinite;
+      transition: filter 0.3s ease;
     }
-    
+
+    .nav-logo:hover svg,
+    .nav-logo:focus-visible svg {
+      filter: drop-shadow(0 0 12px rgba(0, 255, 0, 0.8));
+    }
+
+    .nav-logo span {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-left: 0;
+      transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+    }
+
+    .nav-logo:hover span,
+    .nav-logo:focus-visible span {
+      max-width: 200px;
+      opacity: 1;
+      margin-left: 10px;
+    }
+
     @keyframes navBotBob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-2px); }
@@ -187,7 +209,7 @@
     /* ───── Inline Support Section ───── */
     .support-section {
       max-width: 800px;
-      margin: 5rem auto 4rem;
+      margin: 0 auto 4rem;
       padding: 3rem 2rem;
       border: 1px solid rgba(0, 255, 0, 0.15);
       border-radius: 4px;
@@ -200,21 +222,57 @@
     }
     
     .support-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: rgba(0, 255, 0, 0.5);
-      margin-bottom: 2rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      opacity: 0.5;
+      font-weight: 900;
+      max-width: 800px;
+      margin: 5rem auto 1rem;
+      padding: 0 0.5rem;
     }
     
     .support-bot {
+      display: block;
       width: 80px;
       height: 80px;
       margin: 0 auto 1.5rem;
       animation: supportBotBob 2.5s ease-in-out infinite;
       filter: drop-shadow(0 0 16px rgba(0, 255, 0, 0.3));
+      cursor: pointer;
+      text-decoration: none;
+      transition: filter 0.3s ease, transform 0.2s ease;
+      position: relative;
     }
-    
+
+    .support-bot:hover {
+      filter: drop-shadow(0 0 28px rgba(0, 255, 0, 0.7));
+      transform: scale(1.08);
+    }
+
+    .support-bot:active {
+      transform: scale(0.98);
+    }
+
+    .support-bot-hint {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: rgba(0, 255, 0, 0.4);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease, top 0.3s ease;
+      pointer-events: none;
+    }
+
+    .support-bot:hover .support-bot-hint {
+      opacity: 1;
+      top: -32px;
+    }
+
     .support-bot svg {
       width: 100%;
       height: 100%;
@@ -275,14 +333,22 @@
       transform: translateY(-1px);
     }
     
-    .support-button-icon {
-      font-size: 16px;
+    .support-button-arrow {
+      font-size: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    .support-button:hover .support-button-arrow {
+      transform: translateX(4px);
     }
     
     @media (max-width: 640px) {
+      .support-label {
+        margin: 3rem auto 1rem;
+      }
       .support-section {
         padding: 2rem 1.5rem;
-        margin: 3rem auto 3rem;
+        margin: 0 auto 3rem;
       }
       .support-bot {
         width: 64px;
@@ -941,10 +1007,10 @@
   </div>
   
   <!-- Inline Support Section -->
+  <div class="support-label">// SUPPORT</div>
   <div class="support-section">
-    <div class="support-label">// SUPPORT</div>
-    
-    <div class="support-bot">
+    <a href="https://paypal.me/pebblylabs" target="_blank" rel="noopener" class="support-bot" aria-label="Support via PayPal">
+      <span class="support-bot-hint" data-en="CLICK TO SUPPORT" data-ko="클릭해서 후원하기">CLICK TO SUPPORT</span>
       <svg viewBox="-1 -1 15 16">
         <rect x="2" y="0" width="9" height="1" fill="#00ff00"/>
         <rect x="1" y="1" width="11" height="5" fill="#00ff00"/>
@@ -961,7 +1027,7 @@
         <rect x="8" y="3" width="2" height="1" fill="#00aaff"/>
         <rect x="4" y="5" width="5" height="1" fill="#007700"/>
       </svg>
-    </div>
+    </a>
     
     <p class="support-message"
        data-en='<span class="support-message-highlight">{BOT}</span> keeps building because you keep believing.'
@@ -982,8 +1048,8 @@
     </p>
     
     <a href="https://paypal.me/pebblylabs" target="_blank" rel="noopener" class="support-button">
-      <span class="support-button-icon">☕</span>
-      <span data-en="BUY {BOT} A COFFEE" data-ko="{BOT}에게 커피 사주기">BUY {BOT} A COFFEE</span>
+      <span data-en="SUPPORT VIA PAYPAL" data-ko="PAYPAL로 후원하기">SUPPORT VIA PAYPAL</span>
+      <span class="support-button-arrow">→</span>
     </a>
   </div>
   
