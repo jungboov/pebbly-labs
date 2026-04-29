@@ -1,6 +1,13 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import styles from "./SiteHeader.module.css";
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  const isPixelRemover = pathname?.startsWith("/pixel-remover") ?? false;
+  const isPixelMouse = pathname?.startsWith("/pixel-mouse") ?? false;
+
   return (
     <nav className={styles.siteNav}>
       <div className={styles.navInner}>
@@ -30,11 +37,18 @@ export function SiteHeader() {
         <div className={styles.navLinks}>
           <a
             href="https://toolkit.pebblylabs.com/pixel-remover"
-            className={styles.activeLink}
+            className={isPixelRemover ? styles.activeLink : ""}
+            aria-current={isPixelRemover ? "page" : undefined}
           >
             PIXEL_REMOVER
           </a>
-          <a href="https://toolkit.pebblylabs.com/pixel-mouse">PIXEL_MOUSE</a>
+          <a
+            href="https://toolkit.pebblylabs.com/pixel-mouse"
+            className={isPixelMouse ? styles.activeLink : ""}
+            aria-current={isPixelMouse ? "page" : undefined}
+          >
+            PIXEL_MOUSE
+          </a>
         </div>
       </div>
     </nav>
