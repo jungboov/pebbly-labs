@@ -777,9 +777,29 @@
       right: 0;
       text-align: center;
       font-size: 0.65rem;
-      opacity: 0.3;
+      color: rgba(0, 255, 0, 0.3);
       letter-spacing: 0.2em;
       font-weight: 700;
+    }
+
+    .footer-contact {
+      margin-top: 0.55rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      font-weight: 400;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-contact a {
+      color: rgba(0, 255, 0, 0.55);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-contact a:hover {
+      color: #00ff00;
+      text-decoration: underline;
     }
     
     /* ───── 모바일 ───── */
@@ -998,9 +1018,9 @@
          data-ko="오픈 · 개발자 친화적 · 무료로 시작">
         Open · Developer-friendly · Free to start
       </p>
-      <p data-en="Built in public from Seoul 🇰🇷"
-         data-ko="서울에서 공개 개발 중 🇰🇷">
-        Built in public from Seoul 🇰🇷
+      <p data-en="Built in public · Building solo"
+         data-ko="공개 개발 중 · 솔로 빌더">
+        Built in public · Building solo
       </p>
     </div>
     
@@ -1077,10 +1097,14 @@
   </a>
   
   <!-- Footer -->
-  <div class="footer"
-       data-en="© 2026 PEBBLY LABS · PRIVACY BY DEFAULT"
-       data-ko="© 2026 PEBBLY LABS · 프라이버시를 기본으로">
-    © 2026 PEBBLY LABS · PRIVACY BY DEFAULT
+  <div class="footer">
+    <div data-en="© 2026 PEBBLY LABS · PRIVACY BY DEFAULT"
+         data-ko="© 2026 PEBBLY LABS · 프라이버시를 기본으로">
+      © 2026 PEBBLY LABS · PRIVACY BY DEFAULT
+    </div>
+    <div class="footer-contact">
+      <a href="mailto:hello@pebblylabs.com">hello@pebblylabs.com</a>
+    </div>
   </div>
   
   <!-- Walking BOT script -->

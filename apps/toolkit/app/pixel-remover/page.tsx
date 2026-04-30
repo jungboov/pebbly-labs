@@ -76,7 +76,13 @@ export default function Home() {
           />
         </div>
         <div className="flex-shrink-0 text-center text-[9px] opacity-40 tracking-[0.25em] font-black text-[#00ff00]">
-          🔒 100% LOCAL · NO UPLOAD · ZERO SERVER
+          🔒 100% LOCAL · NO UPLOAD · ZERO SERVER ·{" "}
+          <a
+            href="mailto:hello@pebblylabs.com"
+            className="hover:opacity-100 hover:underline transition-opacity"
+          >
+            HELLO@PEBBLYLABS.COM
+          </a>
         </div>
         <input
           type="file"
