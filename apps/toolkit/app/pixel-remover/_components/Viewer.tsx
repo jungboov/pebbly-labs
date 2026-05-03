@@ -6,11 +6,27 @@ interface ViewerProps {
   compareSlider: number;
   onCompareChange: (v: number) => void;
   onFileInputClick: () => void;
+  onDownloadCurrent: () => void;
 }
 
-export function Viewer({ selectedItem, compareSlider, onCompareChange, onFileInputClick }: ViewerProps) {
+export function Viewer({ selectedItem, compareSlider, onCompareChange, onFileInputClick, onDownloadCurrent }: ViewerProps) {
+  const canDownloadCurrent = selectedItem?.status === 'completed' && !!selectedItem.processed;
+
   return (
     <div className="relative aspect-square bg-black border-4 border-[#00ff00] flex items-center justify-center overflow-hidden bg-black/40 max-h-full w-auto max-w-full mx-auto min-h-0 flex-1">
+      {canDownloadCurrent && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDownloadCurrent();
+          }}
+          aria-label="Download current result"
+          title="Download this result"
+          className="absolute top-2 right-2 z-50 w-9 h-9 md:w-10 md:h-10 bg-black/80 border-2 border-[#00ff00] text-[#00ff00] flex items-center justify-center text-base md:text-lg font-black hover:bg-[#00ff00] hover:text-black transition-all backdrop-blur-sm shadow-[0_0_12px_rgba(0,255,0,0.4)]"
+        >
+          ↓
+        </button>
+      )}
       {!selectedItem ? (
         <div className="text-center cursor-pointer group" onClick={onFileInputClick}>
           <div className="w-16 h-16 border-2 border-[#00ff00] flex items-center justify-center mx-auto mb-4 text-2xl font-bold group-hover:bg-[#00ff00] group-hover:text-black transition-all">+</div>
