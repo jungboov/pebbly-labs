@@ -15,6 +15,13 @@ export default function Home() {
     batchItems,
     selectedIndex,
     setSelectedIndex,
+    selectedIds,
+    selectedCount,
+    completedCount,
+    allCompletedSelected,
+    toggleSelection,
+    selectAll,
+    deselectAll,
     compareSlider,
     setCompareSlider,
     isDragging,
@@ -27,7 +34,9 @@ export default function Home() {
     overallPercentage,
     fileInputRef,
     handleFiles,
-    handleDownloadAll,
+    handleDownloadZip,
+    handleDownloadIndividual,
+    handleDownloadCurrent,
     handleClearCache,
     handleRetryModel,
   } = useBatchProcessor();
@@ -45,6 +54,7 @@ export default function Home() {
           compareSlider={compareSlider}
           onCompareChange={setCompareSlider}
           onFileInputClick={() => fileInputRef.current?.click()}
+          onDownloadCurrent={handleDownloadCurrent}
         />
         <div className="flex-shrink-0">
           <StatusBar
@@ -60,18 +70,26 @@ export default function Home() {
           <ThumbnailStrip
             items={batchItems}
             selectedIndex={selectedIndex}
-            onSelect={(idx) => {
+            selectedIds={selectedIds}
+            onSelect={(idx, id) => {
               setSelectedIndex(idx);
               setCompareSlider(50);
+              toggleSelection(id);
             }}
             onAdd={() => fileInputRef.current?.click()}
+            selectedCount={selectedCount}
+            completedCount={completedCount}
+            allCompletedSelected={allCompletedSelected}
+            onSelectAll={selectAll}
+            onDeselectAll={deselectAll}
           />
         </div>
         <div className="flex-shrink-0">
           <ControlRow
-            completedCount={batchStats.completed}
+            selectedCount={selectedCount}
             isDownloading={isDownloading}
-            onDownload={handleDownloadAll}
+            onDownloadZip={handleDownloadZip}
+            onDownloadIndividual={handleDownloadIndividual}
             onClear={handleClearCache}
           />
         </div>

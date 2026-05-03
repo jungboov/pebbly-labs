@@ -29,12 +29,26 @@ export const PLAN_LIMITS: Record<UserPlan, { concurrency: number; maxBatch: numb
   },
 };
 
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+function formatTimestamp(d: Date): string {
+  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}`;
+}
+
+function singleFileName(originalName: string): string {
+  const base = originalName.replace(/\.[^/.]+$/, '');
+  return `pixel-remover-${base}.png`;
+}
+
 export function useBatchProcessor() {
   const currentPlan: UserPlan = 'free';
   const { concurrency, maxBatch } = PLAN_LIMITS[currentPlan];
 
   const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [compareSlider, setCompareSlider] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -96,11 +110,19 @@ export function useBatchProcessor() {
     await Promise.all(Array.from({ length: concurrency }, () => worker()));
   };
 
+  // On completion: set as viewer + auto-add to download selection
   useEffect(() => {
     const lastId = lastCompletedIdRef.current;
     if (!lastId) return;
     const idx = batchItems.findIndex(i => i.id === lastId);
     if (idx === -1 || batchItems[idx].status !== 'completed') return;
+
+    setSelectedIds(prev => {
+      if (prev.has(lastId)) return prev;
+      const next = new Set(prev);
+      next.add(lastId);
+      return next;
+    });
 
     setSelectedIndex(prevSel => {
       if (prevSel === null) return idx;
@@ -173,24 +195,81 @@ export function useBatchProcessor() {
     };
   }, [batchItems]);
 
-  const handleDownloadAll = async () => {
-    const completedItems = batchItems.filter(item => item.status === 'completed' && item.processed);
-    if (completedItems.length === 0) return;
+  const toggleSelection = (id: string) => {
+    const item = batchItems.find(i => i.id === id);
+    if (!item || item.status !== 'completed') return;
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    const completedIds = batchItems
+      .filter(i => i.status === 'completed')
+      .map(i => i.id);
+    setSelectedIds(new Set(completedIds));
+  };
+
+  const deselectAll = () => setSelectedIds(new Set());
+
+  const getSelectedItems = () =>
+    batchItems.filter(i => i.status === 'completed' && i.processed && selectedIds.has(i.id));
+
+  const handleDownloadZip = async () => {
+    const items = getSelectedItems();
+    if (items.length === 0) return;
     setIsDownloading(true);
-    const zip = new JSZip();
     try {
       const { saveAs } = await (await import('file-saver')).default;
-      for (const item of completedItems) {
+      const zip = new JSZip();
+      for (const item of items) {
         const response = await fetch(item.processed!);
         const blob = await response.blob();
-        zip.file(`${item.fileName.replace(/\.[^/.]+$/, "")}_no_bg.png`, blob);
+        zip.file(singleFileName(item.fileName), blob);
       }
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, "results.zip");
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `pixel-remover-results-${formatTimestamp(new Date())}.zip`);
     } catch (error) {
-      console.error("다운로드 실패:", error);
+      console.error("ZIP 다운로드 실패:", error);
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadIndividual = async () => {
+    const items = getSelectedItems();
+    if (items.length === 0) return;
+    setIsDownloading(true);
+    try {
+      const { saveAs } = await (await import('file-saver')).default;
+      for (const item of items) {
+        const response = await fetch(item.processed!);
+        const blob = await response.blob();
+        saveAs(blob, singleFileName(item.fileName));
+        // brief pause so the browser actually fires each download dialog
+        await new Promise(r => setTimeout(r, 180));
+      }
+    } catch (error) {
+      console.error("개별 다운로드 실패:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadCurrent = async () => {
+    if (selectedIndex === null) return;
+    const item = batchItems[selectedIndex];
+    if (!item || item.status !== 'completed' || !item.processed) return;
+    try {
+      const { saveAs } = await (await import('file-saver')).default;
+      const response = await fetch(item.processed);
+      const blob = await response.blob();
+      saveAs(blob, singleFileName(item.fileName));
+    } catch (error) {
+      console.error("현재 결과 다운로드 실패:", error);
     }
   };
 
@@ -201,6 +280,7 @@ export function useBatchProcessor() {
     });
     setBatchItems([]);
     setSelectedIndex(null);
+    setSelectedIds(new Set());
   };
 
   const selectedItem = useMemo(() =>
@@ -239,10 +319,29 @@ export function useBatchProcessor() {
     return Math.round(sum / batchItems.length);
   }, [batchItems]);
 
+  const completedCount = useMemo(
+    () => batchItems.filter(i => i.status === 'completed').length,
+    [batchItems]
+  );
+
+  const selectedCount = selectedIds.size;
+
+  const allCompletedSelected = useMemo(() => {
+    if (completedCount === 0) return false;
+    return batchItems.every(i => i.status !== 'completed' || selectedIds.has(i.id));
+  }, [batchItems, selectedIds, completedCount]);
+
   return {
     batchItems,
     selectedIndex,
     setSelectedIndex,
+    selectedIds,
+    selectedCount,
+    completedCount,
+    allCompletedSelected,
+    toggleSelection,
+    selectAll,
+    deselectAll,
     compareSlider,
     setCompareSlider,
     isDragging,
@@ -255,7 +354,9 @@ export function useBatchProcessor() {
     overallPercentage,
     fileInputRef,
     handleFiles,
-    handleDownloadAll,
+    handleDownloadZip,
+    handleDownloadIndividual,
+    handleDownloadCurrent,
     handleClearCache,
     handleRetryModel,
     concurrency,
