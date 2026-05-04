@@ -73,7 +73,7 @@ export default function Home() {
             selectedIds={selectedIds}
             onSelect={(idx, id) => {
               setSelectedIndex(idx);
-              setCompareSlider(50);
+              setCompareSlider(0);
               toggleSelection(id);
             }}
             onAdd={() => fileInputRef.current?.click()}
