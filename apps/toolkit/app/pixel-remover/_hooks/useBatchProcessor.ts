@@ -124,6 +124,11 @@ export function useBatchProcessor() {
       return next;
     });
 
+    // Show the result alone first (slider=0). User slides to compare.
+    // Without this, a fresh result mounts at 50% split which can read as
+    // "two images overlapping" before the user understands the slider.
+    setCompareSlider(0);
+
     setSelectedIndex(prevSel => {
       if (prevSel === null) return idx;
       const currentSelected = batchItems[prevSel];
