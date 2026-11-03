@@ -4,30 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Pebbly Labs — Privacy-First Tools for Creators</title>
+  <title>pebbly labs — a small lab that numbers everything it makes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- [ 00 ] 인트로 글꼴(pebbly 로고와 같은 MuseoModerno) — 쓰는 글자만 받음 -->
-  <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;500;600&text=0123456789%5B%5D%20abelpsy&display=block" rel="stylesheet">
-  <meta name="description" content="Browser-based tools that run 100% locally. No uploads, no servers, no tracking. Free and open. Built by creators, for creators.">
+  <!-- [ 00 ] 인트로 글꼴(pebbly 로고와 같은 MuseoModerno) — /00 메인과 같은 글꼴 파일이라 넘어가면 바로 그려짐 -->
+  <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;500;600&display=block" rel="stylesheet">
+  <meta name="description" content="pebbly labs is a small personal lab. Everything it releases gets a number — odd numbers online, even numbers offline. 01 pebbly remover · 03 pebbly mirror.">
   <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=2">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://pebblylabs.com">
-  <meta property="og:title" content="Pebbly Labs">
-  <meta property="og:description" content="Privacy-first browser tools. No uploads. No servers. Your data stays on your device.">
-  <meta property="og:image" content="https://pebblylabs.com/og-image.png">
+  <meta property="og:title" content="pebbly labs">
+  <meta property="og:description" content="A small lab that numbers everything it makes — odd numbers online, even numbers offline.">
+  <meta property="og:image" content="https://pebblylabs.com/og-image.png?v=2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:site_name" content="Pebbly Labs">
+  <meta property="og:site_name" content="pebbly labs">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://pebblylabs.com">
-  <meta name="twitter:title" content="Pebbly Labs">
-  <meta name="twitter:description" content="Privacy-first browser tools. No uploads. No servers. Your data stays on your device.">
-  <meta name="twitter:image" content="https://pebblylabs.com/og-image.png">
+  <meta name="twitter:title" content="pebbly labs">
+  <meta name="twitter:description" content="A small lab that numbers everything it makes — odd numbers online, even numbers offline.">
+  <meta name="twitter:image" content="https://pebblylabs.com/og-image.png?v=2">
 
   <link rel="prefetch" href="/00">
   <!-- 스크립트가 안 돌면 바로 메인으로, 멈춰도 8초 뒤 메인으로 -->
@@ -53,7 +57,7 @@
 </head>
 
 <body>
-  <a class="skip" href="/00">Pebbly Labs — main page</a>
+  <a class="skip" href="/00">pebbly labs — main page</a>
   <!-- [ 00 ] 인트로: 들어올 때마다(약 4초) — 끝나거나 누르거나 키를 누르면 /00 메인으로. 움직임 줄이기를 켠 기기는 다 펼친 모습만 잠깐 -->
   <div class="pi" id="pi" aria-hidden="true"></div>
   <script>
@@ -106,7 +110,11 @@
     render(0);
     let raf = 0, t0s = 0, ended = false;
     const MAIN = '/00' + location.search;
-    const done = () => { if (ended) return; ended = true; cancelAnimationFrame(raf); root.classList.add('out'); setTimeout(() => location.replace(MAIN), 450); };
+    // 끝까지 보면: 멈춘 로고를 그대로 둔 채 넘어감 — /00이 같은 자리에 로고를 띄워 이어받고 제자리로 줄여 옮김(pebbly-handoff)
+    // 누르거나 키로 넘기면: 어두워지며 넘어감(/00은 그냥 뜸)
+    const done = whole => { if (ended) return; ended = true; cancelAnimationFrame(raf);
+      if (whole === true) { try { sessionStorage.setItem('pebbly-handoff', Date.now()); } catch (e) {} location.replace(MAIN); return; }
+      root.classList.add('out'); setTimeout(() => location.replace(MAIN), 450); };
     root.addEventListener('pointerdown', done);
     addEventListener('keydown', done, { once: true });
     addEventListener('resize', () => { if (!ended) render(t0s ? performance.now() - t0s : 0); });
@@ -115,7 +123,7 @@
       measure();
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) { render(T.hold + T.morph); setTimeout(done, 1500); return; }
       t0s = performance.now();
-      const step = now => { const t = now - t0s; render(t); if (t < T.hold + T.morph + T.gap + T.spin + T.rest) raf = requestAnimationFrame(step); else done(); };
+      const step = now => { const t = now - t0s; render(t); if (t < T.hold + T.morph + T.gap + T.spin + T.rest) raf = requestAnimationFrame(step); else done(true); };
       raf = requestAnimationFrame(step);
     };
     // 글꼴이 늦게 와서 다른 글꼴로 번쩍이지 않게 기다렸다가(최대 1.5초) 시작
