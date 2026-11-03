@@ -1,5 +1,6 @@
 /* pebbly 번호 인트로 — 원본은 _brand/intro/pebbly-intro.js. 제품 폴더의 사본은 고치지 말고, 원본을 고친 뒤 sync.py로 복사
-   [ NN ] 상자(= 앱 아이콘, 첫 장면) → 스파인으로 펼쳐짐 → 숫자 릴이 한 바퀴(100칸, 00 포함) 돌아 NN에 멈춤 → 사라짐
+   [ NN ] 상자(= 앱 아이콘, 첫 장면) → 화면 가운데에서 스파인으로 바뀜 → 숫자 릴이 한 바퀴(100칸, 00 포함) 돌아 NN에 멈춤
+   → 스파인이 왼쪽으로 비켜나며 점선·이름·꺾쇠가 나타남 → 사라짐 (2026-11-03 사용자가 고른 순서. late: false면 예전처럼 이름이 먼저)
    모든 움직임을 시각 t(ms) 하나로 계산(render) — 화면에서는 play()가 requestAnimationFrame으로, 미리보기 GIF는 render(t)로 장면을 뽑음
 
    pebblyIntro(root, { no: 3, name: 'pebbly mirror', onDone }).play()
@@ -8,14 +9,15 @@
      splash   첫 장면 배율. 'auto'(기본) = 안드로이드 12+에 설치한 앱이면 1.73(시스템 시작 화면이 아이콘을 띄우는 크기, 폴드8 녹화로 잼)
      skip     누르거나 키를 누르면 바로 사라짐(기본 true). 누름은 root 밖으로 안 넘김(제품의 밀기·두 번 탭과 안 섞이게)
      T        시간 표(ms) 일부만 바꿀 때        onStart  펼쳐지기 시작할 때      onDone   다 사라진 뒤(기본: root를 지움)
+     late     숫자가 멈춘 뒤 이름(기본 true). false = 예전 순서(펼쳐질 때 이름까지 다 나오고 스파인 칸에서 숫자가 돎)
      keep     끝까지 보면 사라지지 않고 멈춘 로고를 남긴 채 onDone({ skipped: false }) — 다음 화면이 같은 자리 로고를 이어받을 때(기본 false)
               누르거나 키로 넘기면 keep이어도 사라진 뒤 onDone({ skipped: true })
    색은 root의 color(선·글자)와 background — 기본은 검은 바탕 흰 선, 제품 CSS가 덮어써도 됨(기본 스타일은 :where라 이김)
    움직임 줄이기를 켠 기기는 다 펼친 모습만 1.5초. 글꼴은 최대 1.5초 기다렸다 시작(다른 글꼴로 번쩍이지 않게) */
 function pebblyIntro(root, opts = {}) {
   const { no = 0, name = 'pebbly labs', size = (w, h) => Math.min(w * .84, h * 1.1, 1000), splash = 'auto', skip = true,
-    late = false, keep = false, onStart, onDone = () => root.remove() } = opts;
-  // late(시안): 스파인이 화면 가운데에서 숫자를 돌리고, 멈춘 뒤 왼쪽으로 비켜나며 점선·이름·꺾쇠가 나타남(reveal)
+    late = true, keep = false, onStart, onDone = () => root.remove() } = opts;
+  // late: 스파인이 화면 가운데에서 숫자를 돌리고, 멈춘 뒤 왼쪽으로 비켜나며 점선·이름·꺾쇠가 나타남(reveal). 마지막 장면 자리는 두 순서가 같음
   const T = Object.assign({ hold: 400, morph: 800, gap: 120, spin: 1700, reveal: late ? 700 : 0, rest: 700, out: 600 }, opts.T);
   const SPIN = T.hold + T.morph + T.gap, SHOWN = SPIN + T.spin + T.reveal;   // 숫자가 돌기 시작 · 다 나타남
   T.total = SHOWN + T.rest + T.out;
