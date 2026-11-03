@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <!-- [ 00 ] 인트로 글꼴(pebbly 로고와 같은 MuseoModerno) — 쓰는 글자만 받음 -->
+  <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;500;600&text=0123456789%5B%5D%20abelpsy&display=block" rel="stylesheet">
   <meta name="description" content="Browser-based tools that run 100% locally. No uploads, no servers, no tracking. Free and open. Built by creators, for creators.">
   <meta name="theme-color" content="#00ff00">
 
@@ -835,10 +837,96 @@
         font-size: 1.5rem;
       }
     }
+
+    /* ───── [ 00 ] 인트로 (pebbly 번호 인트로 — 미러 시작 화면과 같은 부품) ─────
+       [ 00 ] 상자 → 스파인으로 펼쳐짐 → 숫자 릴이 한 바퀴(100칸) 돌아 00에 멈춤 → 사라짐. 스크립트가 멈춰도 8초 뒤 CSS가 알아서 치움 */
+    html.pi-on { overflow: hidden; }
+    .pi { position: fixed; inset: 0; z-index: 1000; background: #000; color: #fff; font-family: 'MuseoModerno', sans-serif;
+      transition: opacity .5s; animation: pi-bail .5s 8s forwards; cursor: pointer; }
+    .pi.out { opacity: 0; pointer-events: none; }
+    .pi svg { display: block; width: 100%; height: 100%; }
+    .pi path { fill: none; stroke: currentColor; }
+    .pi text { fill: currentColor; text-anchor: middle; }
+    .pi .mid { font-weight: 600; font-size: 12.5px; }
+    .pi .dim { font-weight: 500; font-size: 11px; opacity: .45; }
+    .pi .name { font-weight: 400; font-size: 27px; dominant-baseline: central; text-anchor: start; }
+    @keyframes pi-bail { to { opacity: 0; visibility: hidden; } }
   </style>
 </head>
 
 <body>
+  <!-- [ 00 ] 인트로: 한 번 연 브라우저 창에서는 한 번만(?intro로 열면 매번). 누르거나 키를 누르면 바로 넘어감, 움직임 줄이기를 켠 기기는 다 펼친 모습만 잠깐 -->
+  <div class="pi" id="pi" aria-hidden="true"></div>
+  <script>
+  (function () {
+    const root = document.getElementById('pi');
+    let seen = false;
+    try { seen = sessionStorage.getItem('pi-seen') === '1' && !/[?&]intro\b/.test(location.search); sessionStorage.setItem('pi-seen', '1'); } catch (e) {}
+    if (seen) { root.remove(); return; }
+    document.documentElement.classList.add('pi-on');
+    const NO = 0, NAME = 'pebbly labs', NN = String(NO).padStart(2, '0'), ROW = 25;
+    // 릴: 99 00 01 … 99 00 01 — 00(1번째)에서 한 바퀴(100칸) 돌아 다시 00(101번째)
+    const nums = []; for (let i = 0; i <= 102; i++) nums.push(String((NO - 1 + i + 100) % 100).padStart(2, '0'));
+    const reel = cls => `<g class="reel ${cls}">${nums.map((v, i) => `<text x="48" y="${64 + i * ROW}">${v}</text>`).join('')}</g>`;
+    // 로고 360×120 단위(스파인 위아래 막대·[ 00 ] 칸·점선·이름·꺾쇠), 화면 가운데가 0,0
+    root.innerHTML = `<svg><defs>
+      <clipPath id="pi-cd"><rect x="20" y="22" width="56" height="30"/><rect x="20" y="69" width="56" height="29"/></clipPath>
+      <clipPath id="pi-cm"><rect x="20" y="52" width="56" height="17"/></clipPath>
+      <linearGradient id="pi-g" x1="0" y1="20" x2="0" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000"/><stop offset=".2" stop-color="#fff"/><stop offset=".8" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+      <mask id="pi-m"><rect x="20" y="20" width="56" height="80" fill="url(#pi-g)"/></mask></defs>
+      <svg x="50%" y="50%" overflow="visible"><g id="pi-lock">
+        <path class="bars" d="M20 18H76M20 102H76" stroke-width="2.8"/>
+        <path class="late" d="M92 18V102" stroke-width="1.25" stroke-dasharray="4 4"/><path class="late corner" stroke-width="2"/>
+        <g class="slot"><text x="48" y="64" class="mid" xml:space="preserve">[ <tspan fill-opacity="0">${NN}</tspan> ]</text>
+          <g clip-path="url(#pi-cd)" mask="url(#pi-m)">${reel('dim')}</g><g clip-path="url(#pi-cm)">${reel('mid')}</g></g>
+        <g class="word"><text x="110" y="60" class="name">${NAME}</text></g>
+      </g><path class="box" stroke-width="7.5"/><text class="t0 mid" xml:space="preserve">[ ${NN} ]</text></svg></svg>`;
+    const q = s => root.querySelector(s), lock = q('#pi-lock'), box = q('.box'), t0 = q('.t0'), reels = root.querySelectorAll('.reel');
+    let LW = 360;
+    const measure = () => { const W = 110 + q('.name').getComputedTextLength() + 14; LW = W + 34; q('.corner').setAttribute('d', `M${W} 18H${W + 14}V32M${W} 102H${W + 14}V88`); };
+    // 상자: 초타원 |x/a|^n + |y/b|^n = 1 — 앱 아이콘 모양(n 2.7)에서 거의 네모(n 16)인 스파인 테두리로
+    const sq = (a, b, n, cx) => { let d = ''; for (let i = 0; i < 64; i++) { const t = i / 32 * Math.PI, c = Math.cos(t), s = Math.sin(t);
+      d += (i ? 'L' : 'M') + (cx + a * Math.sign(c) * Math.abs(c) ** (2 / n)).toFixed(1) + ' ' + (b * Math.sign(s) * Math.abs(s) ** (2 / n)).toFixed(1); } return d + 'Z'; };
+    const io = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // 릴 감속 곡선: cubic-bezier(.12,.62,.22,1)
+    const roll = x => { let t = x; for (let i = 0; i < 8; i++) { const f = 3 * .12 * t * (1 - t) ** 2 + 3 * .22 * t * t * (1 - t) + t ** 3 - x, d = 3 * .12 * (1 - t) ** 2 + 6 * (.22 - .12) * t * (1 - t) + 3 * (1 - .22) * t * t; if (Math.abs(d) < 1e-6) break; t -= f / d; }
+      t = Math.min(1, Math.max(0, t)); return 3 * .62 * t * (1 - t) ** 2 + 3 * t * t * (1 - t) + t ** 3; };
+    const part = (p, a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
+    const T = { hold: 400, morph: 800, gap: 120, spin: 1700, rest: 700 };
+    function render(t) {
+      const k = Math.min(innerWidth * .84, innerHeight * 1.1, 1000) / LW;
+      lock.setAttribute('transform', `translate(${-LW * k / 2} ${-60 * k}) scale(${k})`);
+      const p = part(t, T.hold, T.hold + T.morph), e = io(p);
+      const A = { a: 59.5, b: 59.5, n: 2.7, sw: 7.5, tx: .15, ty: 13.4, fs: 38, x: 0 }, B = { a: 28 * k, b: 42 * k, n: 16, sw: 2.8 * k, tx: 0, ty: 4 * k, fs: 12.5 * k, x: (48 - LW / 2) * k };
+      const v = key => A[key] + (B[key] - A[key]) * e;
+      box.setAttribute('d', sq(v('a'), v('b'), v('n'), v('x'))); box.setAttribute('stroke-width', v('sw')); box.style.opacity = 1 - part(p, .6, 1);
+      q('.bars').style.opacity = part(p, .55, 1);
+      root.querySelectorAll('.late').forEach(n => { n.style.opacity = part(p, .45, 1); });
+      q('.word').style.opacity = part(p, .62, 1);
+      t0.style.display = p >= 1 ? 'none' : ''; q('.slot').style.opacity = p >= 1 ? 1 : 0;
+      t0.setAttribute('x', v('x') + v('tx')); t0.setAttribute('y', v('ty')); t0.style.fontSize = v('fs') + 'px';
+      const i = 1 + 100 * roll(part(t, T.hold + T.morph + T.gap, T.hold + T.morph + T.gap + T.spin));
+      reels.forEach(g => g.setAttribute('transform', `translate(0 ${(-i * ROW).toFixed(2)})`));
+    }
+    render(0);
+    let raf = 0, t0s = 0, ended = false;
+    const done = () => { if (ended) return; ended = true; cancelAnimationFrame(raf); root.classList.add('out'); document.documentElement.classList.remove('pi-on'); setTimeout(() => root.remove(), 600); };
+    root.addEventListener('pointerdown', done);
+    addEventListener('keydown', done, { once: true });
+    addEventListener('resize', () => { if (!ended) render(t0s ? performance.now() - t0s : 0); });
+    const play = () => {
+      if (ended) return;
+      measure();
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { render(T.hold + T.morph); setTimeout(done, 1500); return; }
+      t0s = performance.now();
+      const step = now => { const t = now - t0s; render(t); if (t < T.hold + T.morph + T.gap + T.spin + T.rest) raf = requestAnimationFrame(step); else done(); };
+      raf = requestAnimationFrame(step);
+    };
+    // 글꼴이 늦게 와서 다른 글꼴로 번쩍이지 않게 기다렸다가(최대 1.5초) 시작
+    const fonts = document.fonts ? Promise.all([document.fonts.load("600 12px 'MuseoModerno'", '[ 0123456789 ]'), document.fonts.load("500 12px 'MuseoModerno'", '0123456789'), document.fonts.load("400 27px 'MuseoModerno'", NAME)]) : Promise.resolve();
+    Promise.race([fonts.catch(() => {}), new Promise(r => setTimeout(r, 1500))]).then(() => setTimeout(play, 150));
+  })();
+  </script>
   
   <!-- 한국어 안내 배너 -->
   <div class="ko-banner" id="koBanner">
