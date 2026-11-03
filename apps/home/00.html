@@ -659,6 +659,8 @@
     try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
     if (saved === 'ko') applyLanguage('ko', false);
     if (shouldShowBanner()) setTimeout(() => koBanner.classList.add('visible'), document.documentElement.classList.contains('handoff') ? 1800 : 600);
+    // 서비스 워커(sw.js): 홈 화면에 앱으로 설치되게 — 없으면 바로가기로만 만들어져 시작 화면이 흰 바탕
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
 </body>
 </html>
