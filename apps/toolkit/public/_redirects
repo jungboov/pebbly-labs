@@ -1,0 +1,7 @@
+# 01 pebbly remover가 remover.pebblylabs.com으로 옮겨 감(2026-11-03) — 예전 주소는 영구(301) 넘김
+# / 도 넘김: 툴킷 첫 화면은 /pixel-remover로 보내던 자리(앱 안 이동이라 아래 줄을 안 거쳐 예전 화면이 떴음)
+# pixel mouse(/pixel-mouse)는 그대로
+/                 https://remover.pebblylabs.com/  301
+/pixel-remover    https://remover.pebblylabs.com/  301
+/pixel-remover/   https://remover.pebblylabs.com/  301
+/pixel-remover/*  https://remover.pebblylabs.com/  301

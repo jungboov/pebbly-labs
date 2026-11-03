@@ -36,7 +36,7 @@ export function SiteHeader() {
         </a>
         <div className={styles.navLinks}>
           <a
-            href="https://toolkit.pebblylabs.com/pixel-remover"
+            href="https://remover.pebblylabs.com"
             className={isPixelRemover ? styles.activeLink : ""}
             aria-current={isPixelRemover ? "page" : undefined}
           >
