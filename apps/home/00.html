@@ -40,12 +40,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- 로고·번호·영어 제목: MuseoModerno (인트로와 같은 글꼴 파일 — 인트로에서 넘어오면 이미 받아 둔 것), 한글·본문: Pretendard -->
+  <!-- 글은 지금 영어만 — 로고·번호·본문 모두 MuseoModerno 하나 (인트로와 같은 글꼴 파일이라 인트로에서 넘어오면 이미 받아 둔 것). 한글 글꼴은 따로 고르는 중 -->
   <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 
   <script>
-    // 인트로([ 00 ])가 끝나고 막 넘어왔으면: 첫 화면에 로고만 인트로가 멈춘 자리에 띄우고 → 제자리로 줄어들며 이동 → 나머지가 나타남
+    // 인트로([ 00 ])가 끝나고 막 넘어왔으면: 00장 로고를 인트로가 멈춘 자리에 띄우고 → 제자리로 옮김 → 목차가 나타남
     // (스크립트가 멈춰도 3초 뒤엔 다 보이게)
     try {
       const t = +sessionStorage.getItem('pebbly-handoff');
@@ -58,609 +57,430 @@
   </script>
 
   <style>
-    /* ───── pebbly labs [ 00 ] 메인 — 온라인은 평면: 검은 바탕에 흰 선 ───── */
+    /* ───── pebbly labs [ 00 ] 메인 — 번호가 곧 목차 ─────
+       왼쪽(폰은 위쪽) 번호 목차: 지금 보는 번호만 [ ]로 감쌈. 짝수(오프라인)는 아직 없어서 흐리게
+       번호마다 한 장: ① 스크롤하면 작은 카드 속 [ NN ] 상자가 화면 가득 커짐 → ② 다 커지면 인트로 자동 재생
+       (다른 번호에 갔다 오거나, 카드로 되돌렸다 키우거나, 목차를 누르면 다시) → ③ 더 내리면 로고가 작아지며 위로 → ④ 아래에 한 줄 설명
+       00장은 카드 없이 다 커진 채로 시작(인트로에서 넘어온 로고를 그대로 이어받음). 온라인은 평면 — 검은 바탕 흰 선 */
     :root {
+      color-scheme: dark;
       --bg: #000;
       --fg: #fff;
       --text: rgba(255, 255, 255, 0.8);
-      --dim: rgba(255, 255, 255, 0.58);
-      --faint: rgba(255, 255, 255, 0.32);
+      --dim: rgba(255, 255, 255, 0.56);
+      --faint: rgba(255, 255, 255, 0.28);
       --line: rgba(255, 255, 255, 0.2);
-      --line-hi: rgba(255, 255, 255, 0.6);
-      --logo: 'MuseoModerno', 'Pretendard Variable', Pretendard, sans-serif;
-      --sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-      --pad: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
-      --wide: 960px;
+      --logo: 'MuseoModerno', system-ui, sans-serif;
+      --rail: 232px;
+      --bar: 0px;
     }
-    @media (min-width: 720px) { :root { --pad: 32px; } }
-
+    @media (max-width: 860px) { :root { --bar: 48px; } }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { background: var(--bg); -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-    html[lang="ko"] body { word-break: keep-all; }
+    html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+    body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--logo); -webkit-font-smoothing: antialiased; }
     a { color: inherit; }
-    ul, ol { list-style: none; }
-    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    ol, ul { list-style: none; }
     :focus-visible { outline: 1.5px dashed var(--fg); outline-offset: 4px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-    /* ───── 위쪽 줄: 주소 · 언어 ───── */
-    .top {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      z-index: 5;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: max(14px, env(safe-area-inset-top)) max(var(--pad), calc((100% - 1120px) / 2)) 0;
-    }
-    .top-addr {
-      font: 500 14px/1 var(--logo);
-      color: var(--dim);
-      text-decoration: none;
-      letter-spacing: 0.02em;
-    }
-    .top-addr b { color: var(--fg); font-weight: 600; }
-    .lang { display: flex; align-items: center; font: 600 13px/1 var(--logo); letter-spacing: 0.08em; }
-    .lang-btn {
-      background: none;
-      border: 0;
-      color: var(--faint);
-      font: inherit;
-      letter-spacing: inherit;
-      padding: 10px 8px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .lang-btn:hover { color: var(--dim); }
-    .lang-btn.active { color: var(--fg); }
-    .lang-sep { color: var(--faint); }
-
-    /* ───── 첫 화면: 로고 · 한 줄 소개 ───── */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      min-height: 100svh;
+    .page {
       display: grid;
-      grid-template-rows: 1fr auto 1.15fr;
-      justify-items: center;
-      padding: 72px var(--pad) 96px;
-      text-align: center;
+      grid-template-columns: var(--rail) minmax(0, 1fr);
+      gap: 40px;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
     }
-    .hero-logo { grid-row: 2; width: min(520px, 100%); font-size: 0; }
-    .hero-logo svg { display: block; width: 100%; height: auto; overflow: visible; cursor: default; }
-    .hero-text { grid-row: 3; align-self: start; max-width: 44em; margin-top: clamp(28px, 5vh, 48px); }
-    .hero-title { text-wrap: balance; }
-    .card-desc, .contact-sub, .rules li { text-wrap: pretty; }
-    .hero-title {
-      font: 400 clamp(22px, 3.2vw, 30px)/1.35 var(--logo);
-      letter-spacing: 0.005em;
+    @media (min-width: 900px) {
+      .page { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); }
     }
-    html[lang="ko"] .hero-title { font-family: var(--sans); font-weight: 600; letter-spacing: -0.02em; }
-    /* 아래로: 로고의 점선을 세운 모양 */
-    .hero-down {
+
+    /* ───── 번호 목차: 로고 짜임 — 번호 칸 | 점선 | 이름 ───── */
+    .rail { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+    .rail-top { font: 500 13px/1 var(--logo); color: var(--dim); text-decoration: none; letter-spacing: 0.02em; }
+    .rail-top:hover { color: var(--fg); }
+    .rail ol { position: relative; display: grid; gap: 2px; }
+    .rail ol::before { content: ''; position: absolute; left: 76px; top: 6px; bottom: 6px; border-left: 1.25px dashed var(--faint); }
+    .rail a.item {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      align-items: center;
+      padding: 8px 0;
+      text-decoration: none;
+      color: var(--faint);
+      transition: color 0.3s;
+    }
+    .rail a.item:hover { color: var(--dim); }
+    .num { font: 600 15px/1 var(--logo); letter-spacing: 0.04em; white-space: pre; text-align: center; }
+    .num .br { opacity: 0; transition: opacity 0.3s; }
+    .nm { padding-left: 18px; font: 400 17px/1.2 var(--logo); white-space: nowrap; }
+    .rail a.item.even { color: rgba(255, 255, 255, 0.16); }
+    .rail a.item.even .nm { font-size: 14px; }
+    .rail a.item.on { color: var(--fg); }
+    .rail a.item.even.on { color: var(--dim); }
+    .rail a.item.on .br { opacity: 1; }
+    .rail-note { font-size: 13px; color: var(--faint); line-height: 1.6; }
+    .rail-now { display: none; }
+
+    /* ───── 번호마다 한 장: 높은 칸 안에서 무대가 화면에 붙어 있고, 스크롤한 만큼 장면이 넘어감 ───── */
+    main { min-width: 0; }
+    .ch { position: relative; height: 260vh; }
+    .ch.open { height: 200vh; }
+    .stage {
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 0px) + var(--bar));
+      height: calc(100vh - var(--bar) - env(safe-area-inset-top, 0px));
+      overflow: hidden;
+    }
+    @supports (height: 100svh) { .stage { height: calc(100svh - var(--bar) - env(safe-area-inset-top, 0px)); } }
+    .frame { position: absolute; border: 1px solid var(--line); border-radius: 28px; pointer-events: none; }
+    .stage .pebbly-intro { position: absolute; inset: 0; z-index: auto; background: transparent; cursor: default; transform-origin: 50% 50%; will-change: transform; }
+    .hint {
       position: absolute;
-      left: 50%;
-      bottom: max(24px, env(safe-area-inset-bottom));
-      width: 44px;
-      height: 64px;
-      margin-left: -22px;
+      left: 0; right: 0;
+      bottom: max(24px, env(safe-area-inset-bottom, 0px));
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      font-size: 13px;
       color: var(--dim);
+      opacity: 0;
+      transition: opacity 0.6s;
+      pointer-events: none;
     }
-    .hero-down svg { width: 100%; height: 100%; overflow: visible; }
-    .hero-down path { fill: none; stroke: currentColor; stroke-width: 1.25; }
-    .hero-down .dash { stroke-dasharray: 4 4; animation: march 1.2s linear infinite; }
-    .hero-down:hover { color: var(--fg); }
+    .hint svg { width: 20px; height: 40px; overflow: visible; }
+    .hint path { fill: none; stroke: currentColor; stroke-width: 1.25; }
+    .hint .dash { stroke-dasharray: 4 4; animation: march 1.2s linear infinite; }
     @keyframes march { to { stroke-dashoffset: -8; } }
 
-    /* 로고: 인트로와 같은 360×120 단위 짜임 (스파인 99 [ 00 ] 01 | 점선 | pebbly labs | 꺾쇠) */
-    .logo path { fill: none; stroke: currentColor; }
-    .logo text { fill: currentColor; text-anchor: middle; font-family: var(--logo); }
-    .logo .mid { font-weight: 600; font-size: 12.5px; }
-    .logo .dim { font-weight: 500; font-size: 11px; opacity: 0.45; }
-    .logo .name { font-weight: 400; font-size: 27px; dominant-baseline: central; text-anchor: start; }
-
-    /* ───── 섹션 공통 ───── */
-    .sec { max-width: calc(var(--wide) + 2 * var(--pad)); margin: 0 auto; padding: 88px var(--pad) 0; }
-    .label {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 32px;
-      font: 500 15px/1.2 var(--logo);
-      color: var(--dim);
-      letter-spacing: 0.02em;
-    }
-    .label::before { content: ''; width: 28px; border-top: 1.25px dashed currentColor; }
-
-    /* [ NN ] 아이콘: 앱 아이콘 모양(초타원 n 2.7) = 인트로 첫 장면 */
-    .ic { display: block; flex-shrink: 0; overflow: visible; }
-    .ic use { fill: none; stroke: currentColor; stroke-width: 7.5; }
-    .ic text { fill: currentColor; text-anchor: middle; font: 600 38px var(--logo); }
-    .ic.off use { stroke-dasharray: 9 9; stroke-width: 5; }
-
-    /* ───── 번호 읽는 법 ───── */
-    .strip { display: flex; align-items: center; gap: clamp(6px, 1.6vw, 14px); }
-    .strip li { flex: 0 1 84px; min-width: 0; color: var(--faint); }
-    .strip li.on { color: var(--fg); }
-    .strip svg { display: block; width: 100%; height: auto; overflow: visible; }
-    .strip use { fill: none; stroke: currentColor; stroke-width: 6; }
-    .strip .even use { stroke-dasharray: 9 9; }
-    .strip .lab use { fill: var(--fg); stroke: var(--fg); }
-    .strip text { fill: currentColor; text-anchor: middle; font: 600 52px var(--logo); }
-    .strip .lab text { fill: var(--bg); }
-    .strip .more { flex: 0 0 auto; font: 600 18px var(--logo); color: var(--faint); padding: 0 4px; }
-
-    .legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
-    .lg { border-top: 1px solid var(--line); padding-top: 16px; }
-    .lg-k { display: flex; align-items: center; gap: 10px; font: 600 15px/1 var(--logo); letter-spacing: 0.04em; }
-    .lg-k svg { width: 26px; height: 26px; overflow: visible; }
-    .lg-k use { fill: none; stroke: currentColor; stroke-width: 12; }
-    .lg-k .even use { stroke-dasharray: 16 14; }
-    .lg-k .lab use { fill: var(--fg); }
-    .lg-t { margin-top: 14px; font: 400 21px/1.3 var(--logo); }
-    html[lang="ko"] .lg-t { font-family: var(--sans); font-weight: 600; font-size: 19px; }
-    .lg-d { margin-top: 4px; color: var(--dim); font-size: 15px; }
-    .rules { margin-top: 32px; display: grid; gap: 6px; color: var(--dim); font-size: 15px; }
-    .rules li { position: relative; padding-left: 28px; }
-    .rules li::before { content: '—'; position: absolute; left: 0; color: var(--faint); }
-    .rules b { color: var(--fg); font: 500 15px var(--logo); letter-spacing: 0.02em; }
-
-    /* ───── 내놓은 것들: 번호순 (홀수 카드 · 짝수 자리) ───── */
-    .list { display: grid; gap: 14px; }
-    .card {
+    .content {
+      position: absolute;
+      left: 0; right: 0;
+      top: 60%;
       display: grid;
-      grid-template-columns: 96px 1fr;
-      grid-template-areas: "ic head" "ic body";
-      gap: 0 32px;
-      padding: 32px;
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s, background-color 0.2s;
+      justify-items: center;
+      gap: 14px;
+      padding-inline: 8px;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
     }
-    .card:hover { border-color: var(--line-hi); background: rgba(255, 255, 255, 0.025); }
-    .card .ic { grid-area: ic; width: 96px; height: 96px; }
-    .card-head { grid-area: head; }
-    .card-body { grid-area: body; }
-    .card-tag { font: 500 14px/1.4 var(--logo); color: var(--dim); letter-spacing: 0.02em; }
-    .card-tag b { color: var(--fg); font-weight: 600; }
-    .card-name { margin-top: 4px; font: 400 clamp(28px, 4vw, 34px)/1.2 var(--logo); }
-    .card-was { margin-top: 2px; font-size: 13px; color: var(--faint); }
-    .card-desc { margin-top: 14px; color: var(--text); max-width: 36em; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-    .chips li {
-      padding: 5px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-size: 13.5px;
-      line-height: 1.4;
-      color: var(--dim);
-    }
-    .card-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 24px;
-      font: 500 16px/1 var(--logo);
-      letter-spacing: 0.02em;
-    }
-    .card-link .arr { transition: transform 0.2s; }
-    .card:hover .card-link .arr { transform: translateX(4px); }
+    .content.on { pointer-events: auto; }
+    .content > * { max-width: 34em; }
+    .ch-tag { font: 500 14px/1.4 var(--logo); color: var(--dim); letter-spacing: 0.02em; }
+    .ch-tag b { color: var(--fg); font-weight: 600; }
+    .ch-title { font: 400 clamp(22px, 3vw, 30px)/1.3 var(--logo); text-wrap: balance; }
+    .ch-desc { color: var(--text); font-size: 17px; text-wrap: pretty; }
+    .go { display: inline-flex; gap: 10px; align-items: center; margin-top: 4px; font: 500 16px/1 var(--logo); text-decoration: none; letter-spacing: 0.02em; }
+    .go span:last-child { transition: transform 0.2s; }
+    .go:hover span:last-child { transform: translateX(4px); }
+    .rules { display: grid; gap: 4px; color: var(--dim); font-size: 15px; }
+    .rules b { color: var(--fg); font: 600 14px var(--logo); letter-spacing: 0.04em; margin-right: 6px; }
 
-    .slot {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 16px 32px;
-      border: 1px dashed var(--line);
-      border-radius: 28px;
-      color: var(--faint);
-    }
-    .slot .ic { width: 44px; height: 44px; margin-left: 26px; }
-    .slot-tag { font: 500 14px/1.4 var(--logo); letter-spacing: 0.02em; }
-    .slot-tag b { font-weight: 600; color: var(--dim); }
-    .slot-soon { margin-left: auto; font-size: 14px; }
+    /* 짝수(오프라인) 자리: 아직 없어서 점선 칸 하나만 */
+    .slot { height: 60vh; display: grid; place-items: center; }
+    .slot-card { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border: 1px dashed var(--line); border-radius: 24px; color: var(--faint); }
+    .slot-card svg { width: 40px; height: 40px; overflow: visible; }
+    .slot-card use { fill: none; stroke: currentColor; stroke-width: 5; stroke-dasharray: 9 9; }
+    .slot-card text { fill: currentColor; text-anchor: middle; font: 600 38px var(--logo); }
+    .slot-card b { font: 600 14px var(--logo); color: var(--dim); letter-spacing: 0.04em; }
 
-    /* ───── 연락 ───── */
-    .mail {
-      display: inline-block;
-      font: 400 clamp(26px, 6.4vw, 52px)/1.15 var(--logo);
-      letter-spacing: 0.005em;
-      text-decoration: none;
-      border-bottom: 1.5px dashed var(--line-hi);
-      padding-bottom: 6px;
-      transition: border-color 0.2s;
-    }
+    .contact { padding-block: 16vh 14vh; display: grid; gap: 16px; }
+    .mail-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+    .mail { font: 400 clamp(26px, 5.4vw, 46px)/1.15 var(--logo); text-decoration: none; border-bottom: 1.5px dashed rgba(255, 255, 255, 0.5); padding-bottom: 4px; }
     .mail:hover { border-bottom-style: solid; border-color: var(--fg); }
-    .contact-sub { margin-top: 18px; color: var(--dim); }
-
-    /* ───── 꼬리말 ───── */
-    .foot {
-      max-width: calc(var(--wide) + 2 * var(--pad));
-      margin: 112px auto 0;
-      padding: 24px var(--pad) max(28px, env(safe-area-inset-bottom));
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 8px 24px;
-      border-top: 1px solid var(--line);
-      font: 500 13px/1.6 var(--logo);
-      color: var(--faint);
-      letter-spacing: 0.02em;
-    }
+    .copy { border: 1px solid var(--line); background: var(--bg); color: var(--dim); border-radius: 999px; padding: 7px 16px; font: 500 13px/1 var(--logo); cursor: pointer; }
+    .copy:hover { color: var(--fg); }
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 24px max(40px, env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); font: 500 13px/1.6 var(--logo); color: var(--faint); }
     .foot a { color: var(--dim); text-decoration: none; }
     .foot a:hover { color: var(--fg); }
 
-    /* ───── 한국어 안내 (한국어 브라우저에서 처음 한 번) ───── */
-    .ko-banner {
-      position: absolute;
-      left: 50%;
-      top: calc(max(14px, env(safe-area-inset-top)) + 46px);
-      z-index: 20;
-      transform: translateX(-50%);
-      display: none;
-      align-items: center;
-      gap: 10px;
-      width: max-content;
-      max-width: calc(100% - 32px);
-      padding: 8px 8px 8px 18px;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--line-hi);
-      border-radius: 999px;
-      font-size: 14px;
-      white-space: nowrap;
-      animation: rise 0.4s ease-out;
-    }
-    .ko-banner.visible { display: flex; }
-    .ko-banner-btn {
-      background: var(--fg);
-      color: var(--bg);
-      border: 0;
-      border-radius: 999px;
-      padding: 7px 14px;
-      font: 600 13px var(--sans);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .ko-banner-close {
-      background: none;
-      border: 0;
-      color: var(--dim);
-      font-size: 20px;
-      line-height: 1;
-      padding: 4px 8px;
-      cursor: pointer;
-    }
-    @keyframes rise { from { transform: translate(-50%, -12px); opacity: 0; } }
-
-    /* 언어 바꿀 때 살짝 */
-    body.switching main, body.switching .foot { opacity: 0.3; }
-    main, .foot { transition: opacity 0.2s; }
-
-    /* ───── 인트로에서 넘어올 때 ───── */
-    .handoff .hero-logo svg { visibility: hidden; }
-    .handoff.handoff-show .hero-logo svg { visibility: visible; }
-    .handoff :is(.top, .hero-text, .hero-down, main > .sec, .foot) { opacity: 0; }
-    .handoff.handoff-done :is(.top, .hero-text, .hero-down, main > .sec, .foot) { opacity: 1; transition: opacity 0.8s ease; }
-    .handoff.handoff-done .top { transition-delay: 0.15s; }
-    .handoff.handoff-done .hero-down { transition-delay: 0.3s; }
-
-    /* ───── 폰 ───── */
-    @media (max-width: 640px) {
-      .legend { grid-template-columns: 1fr; gap: 0; margin-top: 28px; }
-      .lg { display: grid; grid-template-columns: 116px 1fr; align-items: baseline; padding: 14px 0; }
-      .lg-t { margin-top: 0; font-size: 19px; }
-      .lg-d { grid-column: 2; margin-top: 2px; }
-      .lg-k { align-self: start; padding-top: 2px; }
-      .card {
-        grid-template-columns: 64px 1fr;
-        grid-template-areas: "ic head" "body body";
-        gap: 0 18px;
-        padding: 22px 20px 24px;
-        border-radius: 24px;
+    /* ───── 폰: 목차가 위쪽 가로 줄로 (번호만, 지금 이름은 오른쪽) ───── */
+    @media (max-width: 860px) {
+      body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+      .page { grid-template-columns: minmax(0, 1fr); gap: 0; }
+      .rail {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 5;
+        height: var(--bar);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
       }
-      .card .ic { width: 64px; height: 64px; align-self: center; }
-      .card-desc { margin-top: 18px; }
-      .slot { padding: 14px 20px; gap: 16px; border-radius: 24px; }
-      .slot .ic { width: 36px; height: 36px; margin-left: 14px; }
-      .sec { padding-top: 72px; }
+      .rail-top, .rail-note, .rail ol::before, .nm { display: none; }
+      .rail ol { display: flex; gap: 0; }
+      .rail a.item { display: block; padding: 6px 4px; }
+      .num { font-size: 14px; }
+      /* 좁은 줄이라 [ ]는 지금 번호에만 자리를 줌 (안 그러면 오른쪽 이름이 잘림) */
+      .num .br { display: none; }
+      .rail a.item.on .br { display: inline; }
+      .rail-now { display: block; font: 400 15px/1 var(--logo); color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+      .ch-desc { font-size: 16px; }
+      .slot { height: 44vh; }
     }
 
+    /* ───── 인트로에서 넘어올 때: 로고만 먼저(인트로 자리), 목차·안내는 뒤에 ───── */
+    .handoff #n00 .pebbly-intro { visibility: hidden; }
+    .handoff.handoff-show #n00 .pebbly-intro { visibility: visible; }
+    .handoff .rail { opacity: 0; }
+    .handoff.handoff-done .rail { opacity: 1; transition: opacity 0.8s ease 0.2s; }
+
+    /* 움직임 줄이기 · 스크립트 없음: 장면을 넘기지 않고 다 펼친 모습과 설명을 그대로 */
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .hero-down .dash { animation: none; }
+      .ch, .ch.open { height: auto; }
+      .stage { position: relative; top: 0; height: 88vh; }
+      .hint .dash { animation: none; }
     }
+    .static .ch, .static .ch.open { height: auto; }
+    .static .stage { position: relative; top: 0; height: auto; padding-block: 64px; }
+    .static .frame, .static .hint { display: none; }
+    .static .content { position: static; opacity: 1; pointer-events: auto; }
   </style>
+  <noscript><style>.ch, .ch.open { height: auto; } .stage { position: relative; height: auto; padding-block: 64px; } .frame, .hint { display: none; } .content { position: static; opacity: 1; pointer-events: auto; }</style></noscript>
 </head>
 
 <body>
-  <!-- 아이콘 모양 하나를 여러 곳에서 씀: 초타원 |x/59.5|^2.7 + |y/59.5|^2.7 = 1 (160 단위, 가운데 80,80) -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-    <path id="sq" d="M139.5 80L139.4 87.9L139.1 93.2L138.7 97.7L138 101.9L137.1 105.7L136.1 109.2L134.9 112.5L133.5 115.6L131.9 118.5L130.1 121.2L128.2 123.7L126 126L123.7 128.2L121.2 130.1L118.5 131.9L115.6 133.5L112.5 134.9L109.2 136.1L105.7 137.1L101.9 138L97.7 138.7L93.2 139.1L87.9 139.4L80 139.5L72.1 139.4L66.8 139.1L62.3 138.7L58.1 138L54.3 137.1L50.8 136.1L47.5 134.9L44.4 133.5L41.5 131.9L38.8 130.1L36.3 128.2L34 126L31.8 123.7L29.9 121.2L28.1 118.5L26.5 115.6L25.1 112.5L23.9 109.2L22.9 105.7L22 101.9L21.3 97.7L20.9 93.2L20.6 87.9L20.5 80L20.6 72.1L20.9 66.8L21.3 62.3L22 58.1L22.9 54.3L23.9 50.8L25.1 47.5L26.5 44.4L28.1 41.5L29.9 38.8L31.8 36.3L34 34L36.3 31.8L38.8 29.9L41.5 28.1L44.4 26.5L47.5 25.1L50.8 23.9L54.3 22.9L58.1 22L62.3 21.3L66.8 20.9L72.1 20.6L80 20.5L87.9 20.6L93.2 20.9L97.7 21.3L101.9 22L105.7 22.9L109.2 23.9L112.5 25.1L115.6 26.5L118.5 28.1L121.2 29.9L123.7 31.8L126 34L128.2 36.3L130.1 38.8L131.9 41.5L133.5 44.4L134.9 47.5L136.1 50.8L137.1 54.3L138 58.1L138.7 62.3L139.1 66.8L139.4 72.1Z"/>
-  </defs></svg>
+  <!-- 짝수 자리 아이콘 모양: 초타원 |x/59.5|^2.7 + |y/59.5|^2.7 = 1 (160 단위, 가운데 80,80) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><path id="sq" d="M139.5 80L139.4 87.9L139.1 93.2L138.7 97.7L138 101.9L137.1 105.7L136.1 109.2L134.9 112.5L133.5 115.6L131.9 118.5L130.1 121.2L128.2 123.7L126 126L123.7 128.2L121.2 130.1L118.5 131.9L115.6 133.5L112.5 134.9L109.2 136.1L105.7 137.1L101.9 138L97.7 138.7L93.2 139.1L87.9 139.4L80 139.5L72.1 139.4L66.8 139.1L62.3 138.7L58.1 138L54.3 137.1L50.8 136.1L47.5 134.9L44.4 133.5L41.5 131.9L38.8 130.1L36.3 128.2L34 126L31.8 123.7L29.9 121.2L28.1 118.5L26.5 115.6L25.1 112.5L23.9 109.2L22.9 105.7L22 101.9L21.3 97.7L20.9 93.2L20.6 87.9L20.5 80L20.6 72.1L20.9 66.8L21.3 62.3L22 58.1L22.9 54.3L23.9 50.8L25.1 47.5L26.5 44.4L28.1 41.5L29.9 38.8L31.8 36.3L34 34L36.3 31.8L38.8 29.9L41.5 28.1L44.4 26.5L47.5 25.1L50.8 23.9L54.3 22.9L58.1 22L62.3 21.3L66.8 20.9L72.1 20.6L80 20.5L87.9 20.6L93.2 20.9L97.7 21.3L101.9 22L105.7 22.9L109.2 23.9L112.5 25.1L115.6 26.5L118.5 28.1L121.2 29.9L123.7 31.8L126 34L128.2 36.3L130.1 38.8L131.9 41.5L133.5 44.4L134.9 47.5L136.1 50.8L137.1 54.3L138 58.1L138.7 62.3L139.1 66.8L139.4 72.1Z"/></defs></svg>
 
-  <!-- 한국어 안내 -->
-  <div class="ko-banner" id="koBanner" role="dialog" aria-label="한국어로 보기">
-    <span>한국어로도 볼 수 있어요</span>
-    <button class="ko-banner-btn" id="koBannerAccept">한국어로 보기</button>
-    <button class="ko-banner-close" id="koBannerClose" aria-label="닫기">×</button>
+  <div class="page">
+    <nav class="rail" aria-label="Numbers">
+      <a class="rail-top" href="/">pebblylabs.com</a>
+      <ol>
+        <li><a class="item on" href="#n00" data-for="n00"><span class="num"><span class="br">[ </span>00<span class="br"> ]</span></span><span class="nm">pebbly labs</span></a></li>
+        <li><a class="item" href="#n01" data-for="n01"><span class="num"><span class="br">[ </span>01<span class="br"> ]</span></span><span class="nm">pebbly remover</span></a></li>
+        <li><a class="item even" href="#n02" data-for="n02"><span class="num"><span class="br">[ </span>02<span class="br"> ]</span></span><span class="nm">offline · soon</span></a></li>
+        <li><a class="item" href="#n03" data-for="n03"><span class="num"><span class="br">[ </span>03<span class="br"> ]</span></span><span class="nm">pebbly mirror</span></a></li>
+        <li><a class="item even" href="#n04" data-for="n04"><span class="num"><span class="br">[ </span>04<span class="br"> ]</span></span><span class="nm">offline · soon</span></a></li>
+        <li><a class="item" href="#n05" data-for="n05"><span class="num"><span class="br">[ </span>05<span class="br"> ]</span></span><span class="nm">next</span></a></li>
+      </ol>
+      <p class="rail-note">odd online · even offline</p>
+      <p class="rail-now" id="railNow" aria-hidden="true">pebbly labs</p>
+    </nav>
+
+    <main>
+      <section class="ch open" id="n00" data-no="0" data-name="pebbly labs">
+        <div class="stage">
+          <div class="pi"></div>
+          <div class="hint" aria-hidden="true">scroll<svg viewBox="0 0 20 40"><path class="dash" d="M10 2V34"/><path d="M5 29L10 34L15 29"/></svg></div>
+          <div class="content">
+            <p class="ch-tag"><b>00</b> · the lab</p>
+            <h1 class="ch-title">working on the next number</h1>
+            <ul class="rules">
+              <li><b>01 03 05</b>online</li>
+              <li><b>02 04 06</b>offline</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="ch" id="n01" data-no="1" data-name="pebbly remover">
+        <div class="stage">
+          <div class="frame"></div>
+          <div class="pi"></div>
+          <div class="content">
+            <h2 class="sr">01 pebbly remover</h2>
+            <p class="ch-tag"><b>01</b> · online · web app</p>
+            <p class="ch-desc">Erase image backgrounds, right in your browser.</p>
+            <a class="go" href="/01"><span>pebblylabs.com/01</span><span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slot" id="n02" data-name="offline · soon">
+        <div class="slot-card"><svg viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 02 ]</text></svg><p><b>02</b> · offline · soon</p></div>
+      </section>
+
+      <section class="ch" id="n03" data-no="3" data-name="pebbly mirror">
+        <div class="stage">
+          <div class="frame"></div>
+          <div class="pi"></div>
+          <div class="content">
+            <h2 class="sr">03 pebbly mirror</h2>
+            <p class="ch-tag"><b>03</b> · online · web app</p>
+            <p class="ch-desc">A clock and dashboard for the screen by your mirror.</p>
+            <a class="go" href="/03"><span>pebblylabs.com/03</span><span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slot" id="n04" data-name="offline · soon">
+        <div class="slot-card"><svg viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 04 ]</text></svg><p><b>04</b> · offline · soon</p></div>
+      </section>
+
+      <!-- 05: 이름이 아직 없어서 펼쳐지면 'pebbly · · ·' (목차 이름은 next) -->
+      <section class="ch" id="n05" data-no="5" data-name="next" data-logo="pebbly · · ·">
+        <div class="stage">
+          <div class="frame"></div>
+          <div class="pi"></div>
+          <div class="content">
+            <h2 class="sr">05 next</h2>
+            <p class="ch-tag"><b>05</b> · online · in the lab</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <p class="ch-tag">say hello</p>
+        <div class="mail-row">
+          <a class="mail" id="mail" href="mailto:hello@pebblylabs.com">hello@pebblylabs.com</a>
+          <button class="copy" id="copy" type="button">copy</button>
+        </div>
+      </section>
+      <footer class="foot">
+        <span>© 2026 pebbly labs · [ 00 ]</span>
+        <a href="https://paypal.me/pebblylabs" target="_blank" rel="noopener">support the lab ↗</a>
+      </footer>
+    </main>
   </div>
 
-  <header class="top">
-    <a class="top-addr" href="/00">pebblylabs.com/<b>00</b></a>
-    <div class="lang" role="group" aria-label="Language">
-      <button class="lang-btn active" data-lang="en" lang="en">EN</button>
-      <span class="lang-sep" aria-hidden="true">/</span>
-      <button class="lang-btn" data-lang="ko" lang="ko">KO</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- 첫 화면 -->
-    <section class="hero">
-      <h1 class="hero-logo">
-        <span class="sr">pebbly labs [ 00 ]</span>
-        <!-- 인트로가 멈춘 모습 그대로 (이름 폭에 맞춰 꺾쇠·폭은 스크립트가 다시 잼) -->
-        <svg class="logo" id="heroLogo" viewBox="0 0 310.9 120" aria-hidden="true">
-          <defs>
-            <clipPath id="hl-cd"><rect x="20" y="22" width="56" height="30"/><rect x="20" y="69" width="56" height="29"/></clipPath>
-            <clipPath id="hl-cm"><rect x="20" y="52" width="56" height="17"/></clipPath>
-            <linearGradient id="hl-g" x1="0" y1="20" x2="0" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000"/><stop offset=".2" stop-color="#fff"/><stop offset=".8" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
-            <mask id="hl-m"><rect x="20" y="20" width="56" height="80" fill="url(#hl-g)"/></mask>
-          </defs>
-          <path d="M20 18H76M20 102H76" stroke-width="2.8"/>
-          <path d="M92 18V102" stroke-width="1.25" stroke-dasharray="4 4"/>
-          <path class="corner" d="M276.9 18H290.9V32M276.9 102H290.9V88" stroke-width="2"/>
-          <text x="48" y="64" class="mid" xml:space="preserve">[ <tspan fill-opacity="0">00</tspan> ]</text>
-          <g clip-path="url(#hl-cd)" mask="url(#hl-m)"><g class="reel dim"><text x="48" y="39">99</text><text x="48" y="64">00</text><text x="48" y="89">01</text></g></g>
-          <g clip-path="url(#hl-cm)"><g class="reel mid"><text x="48" y="39">99</text><text x="48" y="64">00</text><text x="48" y="89">01</text></g></g>
-          <text x="110" y="60" class="name">pebbly labs</text>
-        </svg>
-      </h1>
-      <div class="hero-text">
-        <!-- 한 줄만: 홀수·짝수 설명은 바로 아래 '번호 읽는 법'이 맡음 -->
-        <p class="hero-title"
-           data-en="working on the next number"
-           data-ko="다음 번호를 만들고 있어요">working on the next number</p>
-      </div>
-      <a class="hero-down" href="#numbers" aria-label="Scroll down">
-        <svg viewBox="0 0 44 64" aria-hidden="true"><path class="dash" d="M22 4V54"/><path d="M15 47L22 54L29 47"/></svg>
-      </a>
-    </section>
-
-    <!-- 번호 읽는 법 -->
-    <section class="sec" id="numbers" aria-labelledby="numbers-h">
-      <h2 class="label" id="numbers-h"><span data-en="how the numbers work" data-ko="번호 읽는 법">how the numbers work</span></h2>
-      <ol class="strip" aria-hidden="true">
-        <li class="lab on"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">00</text></svg></li>
-        <li class="odd on"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">01</text></svg></li>
-        <li class="even"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">02</text></svg></li>
-        <li class="odd on"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">03</text></svg></li>
-        <li class="even"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">04</text></svg></li>
-        <li class="odd"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">05</text></svg></li>
-        <li class="even"><svg viewBox="0 0 160 160"><use href="#sq"/><text x="80" y="99">06</text></svg></li>
-        <li class="more">…</li>
-      </ol>
-      <div class="legend">
-        <div class="lg">
-          <p class="lg-k"><svg class="lab" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/></svg>00</p>
-          <p class="lg-t" data-en="the lab itself" data-ko="연구소 자체">the lab itself</p>
-          <p class="lg-d" data-en="pebbly labs — this page" data-ko="pebbly labs — 지금 이 페이지">pebbly labs — this page</p>
-        </div>
-        <div class="lg">
-          <p class="lg-k"><svg viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/></svg>01 03 05</p>
-          <p class="lg-t" data-en="online" data-ko="온라인">online</p>
-          <p class="lg-d" data-en="web apps · programs · games" data-ko="웹앱 · 프로그램 · 게임">web apps · programs · games</p>
-        </div>
-        <div class="lg">
-          <p class="lg-k"><svg class="even" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/></svg>02 04 06</p>
-          <p class="lg-t" data-en="offline" data-ko="오프라인">offline</p>
-          <p class="lg-d" data-en="goods · products" data-ko="굿즈 · 상품">goods · products</p>
-        </div>
-      </div>
-      <ul class="rules">
-        <li data-en="A number is the order of release. Once given, it is never reused."
-            data-ko="번호는 내놓은 차례예요. 한 번 준 번호는 다시 쓰지 않아요.">A number is the order of release. Once given, it is never reused.</li>
-        <li data-en="When something online is also made for real, it gets a new even number."
-            data-ko="온라인 제품을 실물로도 만들면 새 짝수 번호를 받아요.">When something online is also made for real, it gets a new even number.</li>
-        <li data-en="Go straight to any of them at <b>pebblylabs.com/NN</b>"
-            data-ko="<b>pebblylabs.com/번호</b>로 바로 갈 수 있어요.">Go straight to any of them at <b>pebblylabs.com/NN</b></li>
-      </ul>
-    </section>
-
-    <!-- 내놓은 것들 (번호순) -->
-    <section class="sec" id="products" aria-labelledby="products-h">
-      <h2 class="label" id="products-h"><span data-en="released so far" data-ko="지금까지 내놓은 것">released so far</span></h2>
-      <div class="list">
-
-        <a class="card" href="/01">
-          <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 01 ]</text></svg>
-          <div class="card-head">
-            <p class="card-tag"><b>01</b> · <span data-en="online · web app" data-ko="온라인 · 웹앱">online · web app</span></p>
-            <h3 class="card-name">pebbly remover</h3>
-            <p class="card-was" data-en="formerly pixel remover" data-ko="예전 이름 pixel remover">formerly pixel remover</p>
-          </div>
-          <div class="card-body">
-            <p class="card-desc"
-               data-en="Erases image backgrounds right in your browser. Your pictures never leave your device."
-               data-ko="이미지 배경을 브라우저 안에서 바로 지워요. 사진은 서버로 보내지 않아요.">Erases image backgrounds right in your browser. Your pictures never leave your device.</p>
-            <ul class="chips">
-              <li data-en="AI background removal" data-ko="AI 배경 지우기">AI background removal</li>
-              <li data-en="runs on your device" data-ko="내 기기 안에서만 처리">runs on your device</li>
-              <li data-en="many images at once" data-ko="여러 장 한 번에">many images at once</li>
-              <li data-en="PNG · ZIP download" data-ko="PNG · ZIP 받기">PNG · ZIP download</li>
-            </ul>
-            <p class="card-link"><span>pebblylabs.com/01</span><span class="arr" aria-hidden="true">→</span></p>
-          </div>
-        </a>
-
-        <div class="slot">
-          <svg class="ic off" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 02 ]</text></svg>
-          <p class="slot-tag"><b>02</b> · <span data-en="offline" data-ko="오프라인">offline</span></p>
-          <p class="slot-soon" data-en="coming soon" data-ko="준비 중">coming soon</p>
-        </div>
-
-        <a class="card" href="/03">
-          <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 03 ]</text></svg>
-          <div class="card-head">
-            <p class="card-tag"><b>03</b> · <span data-en="online · web app" data-ko="온라인 · 웹앱">online · web app</span></p>
-            <h3 class="card-name">pebbly mirror</h3>
-          </div>
-          <div class="card-body">
-            <p class="card-desc"
-               data-en="Turns a tablet or phone into a dashboard that sits beside your mirror."
-               data-ko="태블릿이나 폰을 거울 옆에 두는 대시보드로 바꿔요.">Turns a tablet or phone into a dashboard that sits beside your mirror.</p>
-            <ul class="chips">
-              <li data-en="analog clock themes" data-ko="아날로그 시계 테마">analog clock themes</li>
-              <li data-en="weather · fine dust" data-ko="날씨 · 미세먼지">weather · fine dust</li>
-              <li data-en="transit" data-ko="교통">transit</li>
-              <li data-en="photo frame" data-ko="사진 액자">photo frame</li>
-              <li data-en="calendar" data-ko="달력">calendar</li>
-              <li data-en="logo widget" data-ko="로고 위젯">logo widget</li>
-              <li data-en="set up from your phone" data-ko="폰으로 설정">set up from your phone</li>
-            </ul>
-            <p class="card-link"><span>pebblylabs.com/03</span><span class="arr" aria-hidden="true">→</span></p>
-          </div>
-        </a>
-
-        <div class="slot">
-          <svg class="ic off" viewBox="0 0 160 160" aria-hidden="true"><use href="#sq"/><text x="80.15" y="93.4" xml:space="preserve">[ 04 ]</text></svg>
-          <p class="slot-tag"><b>04</b> · <span data-en="offline" data-ko="오프라인">offline</span></p>
-          <p class="slot-soon" data-en="coming soon" data-ko="준비 중">coming soon</p>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 연락 -->
-    <section class="sec" id="contact" aria-labelledby="contact-h">
-      <h2 class="label" id="contact-h"><span data-en="say hello" data-ko="연락">say hello</span></h2>
-      <a class="mail" href="mailto:hello@pebblylabs.com">hello@pebblylabs.com</a>
-      <p class="contact-sub"
-         data-en="Ideas, bug reports, collaborations — anything at all."
-         data-ko="아이디어, 버그 제보, 협업 제안 — 무엇이든 편하게 보내 주세요.">Ideas, bug reports, collaborations — anything at all.</p>
-    </section>
-  </main>
-
-  <footer class="foot">
-    <span>© 2026 pebbly labs · [ 00 ]</span>
-    <a href="https://paypal.me/pebblylabs" target="_blank" rel="noopener" data-en="support the lab ↗" data-ko="연구소 후원하기 ↗">support the lab ↗</a>
-  </footer>
-
-  <!-- 로고: 이름 폭 재기 · 숫자 릴 · 인트로에서 이어받기 -->
+  <!-- 번호 인트로 부품 사본 — 원본은 D:\workspace\pebbly\_brand\intro\pebbly-intro.js. 여기서 고치지 말고 원본을 고친 뒤 _brand/intro/sync.py -->
+  <script src="/pebbly-intro.js?v=8e44084a"></script>
   <script>
   (function () {
-    const root = document.documentElement, svg = document.getElementById('heroLogo');
-    const NO = 0, ROW = 25, reels = svg.querySelectorAll('.reel');
-    // 릴: 99 00 01 … 99 00 01 — 인트로와 같음. i번째 칸(1 = 00)이 가운데
-    const nums = []; for (let i = 0; i <= 102; i++) nums.push(String((NO - 1 + i + 100) % 100).padStart(2, '0'));
-    reels.forEach(g => { g.innerHTML = nums.map((v, i) => `<text x="48" y="${64 + i * ROW}">${v}</text>`).join(''); });
-    const setReel = i => reels.forEach(g => g.setAttribute('transform', `translate(0 ${(-i * ROW).toFixed(2)})`));
-    setReel(101);
-    let LW = 310.9;
-    const measure = () => {
-      const W = 110 + svg.querySelector('.name').getComputedTextLength() + 14; LW = W + 34;
-      svg.querySelector('.corner').setAttribute('d', `M${W} 18H${W + 14}V32M${W} 102H${W + 14}V88`);
-      svg.setAttribute('viewBox', `0 0 ${LW.toFixed(1)} 120`);
-    };
-    // 릴 감속 곡선: cubic-bezier(.12,.62,.22,1) — 인트로와 같은 1.7초 한 바퀴
-    const roll = x => { let t = x; for (let i = 0; i < 8; i++) { const f = 3 * .12 * t * (1 - t) ** 2 + 3 * .22 * t * t * (1 - t) + t ** 3 - x, d = 3 * .12 * (1 - t) ** 2 + 6 * (.22 - .12) * t * (1 - t) + 3 * (1 - .22) * t * t; if (Math.abs(d) < 1e-6) break; t -= f / d; }
-      t = Math.min(1, Math.max(0, t)); return 3 * .62 * t * (1 - t) ** 2 + 3 * t * t * (1 - t) + t ** 3; };
+    const root = document.documentElement;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!window.pebblyIntro) { root.classList.add('static', 'handoff-show', 'handoff-done'); return; }
+    const part = (p, a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
+    const io = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const base = (w, h) => Math.min(w * .84, h * 1.0, 900);   // 다 펼친 로고 폭(②)
+
+    // 장마다: 무대(화면에 붙음) · 카드 테 · 인트로 · 설명. 인트로는 부품의 render(t)로 장면만 고르고, 시간은 여기서 셈
+    // open(00장): 카드 없이 다 커진 채로 시작 → 스크롤 구간이 짧음(③ .1~.4 · ④ .3~.55)
+    const chs = [...document.querySelectorAll('.ch')].map(el => {
+      const stage = el.querySelector('.stage'), open = el.classList.contains('open');
+      const c = { el, stage, open, frame: stage.querySelector('.frame'), root: stage.querySelector('.pi'), content: stage.querySelector('.content'), hint: stage.querySelector('.hint'), state: '',
+        k: open ? { s0: .1, s1: .4, d0: .3, d1: .55 } : { s0: .55, s1: .75, d0: .68, d1: .88 } };
+      c.api = pebblyIntro(c.root, { no: +el.dataset.no, name: el.dataset.logo || el.dataset.name, size: base, splash: 1, skip: false, keep: true, onDone() {} });
+      return c;
+    });
+
+    // 스크롤 0 → 1 동안: ① 0~.25 카드가 무대 가득 + 상자 확대 → ② 다 커지면 인트로 자동 재생(시간으로) → ③ 로고가 작아지며 위로 → ④ 설명
+    // 다시 재생: 이 번호가 화면에서 완전히 벗어났다 돌아오거나, 카드 크기로 되돌렸다(.2 아래) 다시 키우거나, 목차를 누르면
+    function draw(c, now) {
+      const r = c.el.getBoundingClientRect();
+      if (!reduce && (r.bottom <= 0 || r.top >= innerHeight)) { c.state = ''; return; }
+      const W = c.stage.clientWidth, H = c.stage.clientHeight;
+      const stick = parseFloat(getComputedStyle(c.stage).top) || 0;
+      const p = reduce ? 1 : part(stick - r.top, 0, c.el.offsetHeight - H);
+      const T = c.api.T, SHOWN = T.total - T.rest - T.out;
+      const phone = W < 600, ZMAX = phone ? 2.1 : 2.6;
+
+      // ① 카드 → 무대 가득 (00장은 처음부터 가득)
+      const a = c.open ? 1 : io(part(p, 0, .25));
+      if (reduce) c.state = 'done';
+      else if (!c.open && p < .2) c.state = '';
+      else if (a >= 1 && !c.state) { c.state = 'play'; c.t0 = now; }
+      if (c.frame) {
+        const cw = Math.min(W * .86, 600), chh = Math.min(cw * .62, H * .6);
+        c.frame.style.inset = `${((H - chh) / 2 * (1 - a)).toFixed(1)}px ${((W - cw) / 2 * (1 - a)).toFixed(1)}px`;
+        c.frame.style.borderRadius = (28 * (1 - a)).toFixed(1) + 'px';
+        c.frame.style.opacity = (1 - part(p, .16, .25)).toFixed(3);
+      }
+      if (c.hint) c.hint.style.opacity = c.state === 'done' ? (1 - part(p, 0, .05)).toFixed(3) : '0';
+
+      // ② 인트로: 재생을 시작한 뒤 흐른 시간이 t(끝 장면에서 멈춤). 상자가 스파인으로 바뀌는 동안 확대가 풀려 다 펼친 로고는 제 크기
+      let t = 0;
+      if (c.state === 'play') { t = Math.min(now - c.t0, SHOWN); if (t >= SHOWN) c.state = 'done'; }
+      else if (c.state === 'done') t = SHOWN;
+      const morph = io(part(t, T.hold, T.hold + T.morph));
+      let z = 1 + (ZMAX - 1) * (c.open ? 0 : a) * (1 - morph);
+
+      // ③ 작아지며 위로: 로고 폭을 min(420px, 무대 70%)로, 가운데를 무대 높이 30% 자리로 (재생 중이면 재생은 그대로 이어짐)
+      const s = io(part(p, c.k.s0, c.k.s1));
+      const small = Math.min(420, W * .7) / base(W, H);
+      z *= 1 + (Math.min(1, small) - 1) * s;
+      let x = 0, y = -H * .2 * s;
+      // 인트로에서 넘어온 직후: 인트로가 멈춘 자리·크기(화면 가운데)에서 이 자리(무대 가운데)로 1초 동안 옮김
+      // 그동안은 무대 밖(왼쪽 목차 자리)까지 그려지게 — 안 그러면 로고 왼쪽이 잘림
+      if (c.hand) {
+        const e = io(part(now - c.hand.t0, 0, 1000));
+        x += c.hand.dx * (1 - e); y += c.hand.dy * (1 - e); z *= c.hand.s + (1 - c.hand.s) * e;
+        if (e >= 1) c.hand = null;
+      }
+      c.stage.style.overflow = c.hand ? 'visible' : '';
+      c.root.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${z.toFixed(4)})`;
+      if (c.t !== t || c.W !== W || c.H !== H) { c.api.render(t); c.t = t; c.W = W; c.H = H; }
+
+      // ④ 설명: 로고 아래에서 떠오름
+      const d = io(part(p, c.k.d0, c.k.d1));
+      if (d > 0) {
+        const bars = c.root.querySelector('.pi-bars').getBoundingClientRect(), sb = c.stage.getBoundingClientRect();
+        c.content.style.top = Math.round(bars.bottom - sb.top + (phone ? 28 : 40)) + 'px';
+      }
+      c.content.style.opacity = d.toFixed(3);
+      c.content.style.transform = `translateY(${((1 - d) * 24).toFixed(1)}px)`;
+      c.content.classList.toggle('on', d > .5);
+    }
+    // 스크롤할 때 한 번, 재생 중이거나 옮기는 중인 장이 있으면 끝날 때까지 매 장면
     let raf = 0;
-    const spin = () => {
-      if (reduce) return;
-      cancelAnimationFrame(raf);
-      const t0 = performance.now();
-      const step = now => { const p = Math.min(1, (now - t0) / 1700); setReel(1 + 100 * roll(p)); if (p < 1) raf = requestAnimationFrame(step); };
-      raf = requestAnimationFrame(step);
-    };
-    svg.addEventListener('pointerdown', spin);
+    const tick = now => { raf = 0; chs.forEach(c => draw(c, now)); if (chs.some(c => c.state === 'play' || c.hand)) raf = requestAnimationFrame(tick); };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(tick); };
 
-    // 인트로가 멈춘 자리(화면 가운데, 폭 min(화면 폭 84%, 화면 높이 110%, 1000px)) → 이 자리로 줄어들며 이동
-    const handoff = () => {
-      const r = svg.getBoundingClientRect(), s = r.width / LW;
-      const k = Math.min(innerWidth * .84, innerHeight * 1.1, 1000) / LW;
-      const x = innerWidth / 2 - LW * k / 2, y = innerHeight / 2 - 60 * k;
-      svg.style.transformOrigin = '0 0';
-      svg.style.transform = `translate(${(x - r.left).toFixed(1)}px, ${(y - r.top).toFixed(1)}px) scale(${(k / s).toFixed(4)})`;
-      root.classList.add('handoff-show');
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        svg.style.transition = 'transform 1s cubic-bezier(.65, 0, .35, 1)';
-        svg.style.transform = '';
-        setTimeout(() => root.classList.add('handoff-done'), 650);
-        svg.addEventListener('transitionend', () => { svg.style.transition = svg.style.transformOrigin = ''; }, { once: true });
-      }));
-    };
+    // 글꼴을 받은 뒤(최대 1.5초) 이름 폭을 재고 시작. 인트로에서 왔으면 00장은 재생 없이 끝 장면에서, 인트로가 멈춘 자리부터 옮김
+    const fonts = document.fonts
+      ? Promise.race([Promise.all([document.fonts.load("600 12px MuseoModerno", '[ 0123456789 ]'), document.fonts.load("500 12px MuseoModerno", '0123456789'), document.fonts.load("400 27px MuseoModerno", 'pebbly labs remover mirror ·')]).catch(() => {}), new Promise(r => setTimeout(r, 1500))])
+      : Promise.resolve();
+    fonts.then(() => {
+      chs.forEach(c => { c.api.measure(); c.t = -1; });
+      const c0 = chs[0];
+      if (root.classList.contains('handoff') && !root.classList.contains('handoff-done') && scrollY < 4) {
+        const W = c0.stage.clientWidth, H = c0.stage.clientHeight, sb = c0.stage.getBoundingClientRect();
+        c0.state = 'done';
+        c0.hand = { dx: innerWidth / 2 - (sb.left + W / 2), dy: innerHeight / 2 - (sb.top + H / 2), s: Math.min(innerWidth * .84, innerHeight * 1.1, 1000) / base(W, H), t0: performance.now() + 120 };
+        draw(c0, performance.now());
+        root.classList.add('handoff-show');
+        setTimeout(() => root.classList.add('handoff-done'), 700);
+      } else root.classList.add('handoff-show', 'handoff-done');
+      ask();
+    });
+    addEventListener('scroll', ask, { passive: true });
+    addEventListener('resize', () => { chs.forEach(c => { c.t = -1; }); ask(); });
 
-    // 글꼴을 받은 뒤(최대 1.5초) 이름 폭을 재고 시작 — 인트로에서 왔으면 이어받기, 아니면 숫자 릴 한 바퀴
-    const fonts = document.fonts ? Promise.all([document.fonts.load("400 27px 'MuseoModerno'", 'pebbly labs'), document.fonts.load("600 12.5px 'MuseoModerno'", '[ 0123456789 ]'), document.fonts.load("500 11px 'MuseoModerno'", '0123456789')]) : Promise.resolve();
-    Promise.race([fonts.catch(() => {}), new Promise(r => setTimeout(r, 1500))]).then(() => {
-      measure();
-      if (root.classList.contains('handoff') && !root.classList.contains('handoff-done')) handoff();
-      else setTimeout(spin, 300);
+    // ── 목차: 화면 가운데 줄을 지나는 장이 '지금 번호' — [ ]로 감싸고 밝게
+    const items = [...document.querySelectorAll('.rail a.item')];
+    const now = document.getElementById('railNow');
+    const mark = id => {
+      items.forEach(a => a.classList.toggle('on', a.dataset.for === id));
+      const sec = document.getElementById(id);
+      if (sec && now) now.textContent = sec.dataset.name || '';
+    };
+    if ('IntersectionObserver' in window) {
+      const mid = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) mark(e.target.id); }), { rootMargin: '-50% 0px -50% 0px' });
+      document.querySelectorAll('.ch, .slot').forEach(s => mid.observe(s));
+    }
+    // 목차(번호·이름)를 누르면 스크롤 없이 바로 그 번호의 '다 커진' 자리로 가서 인트로를 처음부터 자동 재생
+    // (지금 보고 있는 번호를 눌러도 다시 재생). 짝수 자리는 그 칸이 화면 가운데 오게
+    items.forEach(a => a.addEventListener('click', e => {
+      const sec = document.getElementById(a.dataset.for); if (!sec) return;
+      e.preventDefault();
+      const c = chs.find(x => x.el === sec);
+      if (c) {
+        const H = c.stage.clientHeight, stick = parseFloat(getComputedStyle(c.stage).top) || 0;
+        c.state = ''; c.hand = null;
+        scrollTo({ top: sec.getBoundingClientRect().top + scrollY - stick + (reduce || c.open ? 0 : (sec.offsetHeight - H) * .3), behavior: 'auto' });
+      } else {
+        scrollTo({ top: sec.getBoundingClientRect().top + scrollY - (innerHeight - sec.offsetHeight) / 2, behavior: 'auto' });
+      }
+      mark(a.dataset.for);
+      ask();
+    }));
+
+    // ── 메일 주소 복사
+    const copy = document.getElementById('copy');
+    copy.addEventListener('click', () => {
+      const done = () => { copy.textContent = 'copied'; setTimeout(() => { copy.textContent = 'copy'; }, 1600); };
+      const pick = () => { const r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+      if (navigator.clipboard) navigator.clipboard.writeText('hello@pebblylabs.com').then(done, pick); else pick();
     });
   })();
-  </script>
-
-  <!-- 한/영 전환 (예전 홈과 같은 저장 키 — 고른 언어가 그대로 이어짐) -->
-  <script>
-    const LANG_KEY = 'pebbly-lang';
-    const BANNER_KEY = 'pebbly-banner-dismissed';
-
-    const langBtns = document.querySelectorAll('.lang-btn');
-    const koBanner = document.getElementById('koBanner');
-
-    function applyLanguage(lang, animate = true) {
-      if (animate) document.body.classList.add('switching');
-      setTimeout(() => {
-        document.querySelectorAll('[data-en]').forEach(el => {
-          const text = el.dataset[lang];
-          if (text) el.innerHTML = text;
-        });
-        document.documentElement.lang = lang;
-        langBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
-        if (animate) document.body.classList.remove('switching');
-      }, animate ? 150 : 0);
-    }
-
-    function selectLanguage(lang) {
-      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-      applyLanguage(lang);
-      koBanner.classList.remove('visible');
-    }
-
-    function shouldShowBanner() {
-      try {
-        if (localStorage.getItem(LANG_KEY) || localStorage.getItem(BANNER_KEY)) return false;
-      } catch (e) { return false; }
-      return (navigator.language || 'en').toLowerCase().startsWith('ko');
-    }
-
-    langBtns.forEach(btn => btn.addEventListener('click', () => selectLanguage(btn.dataset.lang)));
-    document.getElementById('koBannerAccept').addEventListener('click', () => selectLanguage('ko'));
-    document.getElementById('koBannerClose').addEventListener('click', () => {
-      try { localStorage.setItem(BANNER_KEY, '1'); } catch (e) {}
-      koBanner.classList.remove('visible');
-    });
-
-    let saved = null;
-    try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
-    if (saved === 'ko') applyLanguage('ko', false);
-    if (shouldShowBanner()) setTimeout(() => koBanner.classList.add('visible'), document.documentElement.classList.contains('handoff') ? 1800 : 600);
-    // 서비스 워커(sw.js): 홈 화면에 앱으로 설치되게 — 없으면 바로가기로만 만들어져 시작 화면이 흰 바탕
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+  // 서비스 워커(sw.js): 홈 화면에 앱으로 설치되게 — 없으면 바로가기로만 만들어져 시작 화면이 흰 바탕
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
 </body>
 </html>
