@@ -120,7 +120,6 @@
     .rail a.item.on { color: var(--fg); }
     .rail a.item.even.on { color: var(--dim); }
     .rail a.item.on .br { opacity: 1; }
-    .rail-note { font-size: 13px; color: var(--faint); line-height: 1.6; }
     .rail-now { display: none; }
 
     /* ───── 번호마다 한 장: 높은 칸 안에서 무대가 화면에 붙어 있고, 스크롤한 만큼 장면이 넘어감 ───── */
@@ -213,7 +212,7 @@
         background: var(--bg);
         border-bottom: 1px solid var(--line);
       }
-      .rail-top, .rail-note, .rail ol::before, .nm { display: none; }
+      .rail-top, .rail ol::before, .nm { display: none; }
       .rail ol { display: flex; gap: 0; }
       .rail a.item { display: block; padding: 6px 4px; }
       .num { font-size: 14px; }
@@ -260,7 +259,6 @@
         <li><a class="item even" href="#n04" data-for="n04"><span class="num"><span class="br">[ </span>04<span class="br"> ]</span></span><span class="nm">offline · soon</span></a></li>
         <li><a class="item" href="#n05" data-for="n05"><span class="num"><span class="br">[ </span>05<span class="br"> ]</span></span><span class="nm">next</span></a></li>
       </ol>
-      <p class="rail-note">odd online · even offline</p>
       <p class="rail-now" id="railNow" aria-hidden="true">pebbly labs</p>
     </nav>
 
