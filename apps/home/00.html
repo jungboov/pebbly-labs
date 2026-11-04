@@ -135,7 +135,8 @@
     }
     @supports (height: 100svh) { .stage { height: calc(100svh - var(--bar) - env(safe-area-inset-top, 0px)); } }
     .frame { position: absolute; border: 1px solid var(--line); border-radius: 28px; pointer-events: none; }
-    .stage .pebbly-intro { position: absolute; inset: 0; z-index: auto; background: transparent; cursor: default; transform-origin: 50% 50%; will-change: transform; }
+    /* will-change는 안 씀: 붙이면 작게 그린 그림을 그대로 늘려서 첫 장면 상자·숫자가 자글자글해짐 */
+    .stage .pebbly-intro { position: absolute; inset: 0; z-index: auto; background: transparent; cursor: default; transform-origin: 50% 50%; }
     .hint {
       position: absolute;
       left: 0; right: 0;
@@ -352,11 +353,14 @@
 
     // 장마다: 무대(화면에 붙음) · 카드 테 · 인트로 · 설명. 인트로는 부품의 render(t)로 장면만 고르고, 시간은 여기서 셈
     // open(00장): 카드 없이 다 커진 채로 시작 → 스크롤 구간이 짧음(③ .1~.4 · ④ .3~.55)
+    // 첫 장면 [ NN ] 상자는 다 커진 크기(zmax배, 폰 2.1 · 그 밖 2.6)로 부품이 직접 그림(splash) — 카드일 때는 그걸 줄여서 보여 줌
+    // (작게 그린 걸 CSS로 늘리면 상자·숫자가 자글자글해짐)
     const chs = [...document.querySelectorAll('.ch')].map(el => {
       const stage = el.querySelector('.stage'), open = el.classList.contains('open');
       const c = { el, stage, open, frame: stage.querySelector('.frame'), root: stage.querySelector('.pi'), content: stage.querySelector('.content'), hint: stage.querySelector('.hint'), state: '',
+        zmax: open ? 1 : stage.clientWidth < 600 ? 2.1 : 2.6,
         k: open ? { s0: .1, s1: .4, d0: .3, d1: .55 } : { s0: .55, s1: .75, d0: .68, d1: .88 } };
-      c.api = pebblyIntro(c.root, { no: +el.dataset.no, name: el.dataset.logo || el.dataset.name, size: base, splash: 1, skip: false, keep: true, onDone() {} });
+      c.api = pebblyIntro(c.root, { no: +el.dataset.no, name: el.dataset.logo || el.dataset.name, size: base, splash: c.zmax, skip: false, keep: true, onDone() {} });
       return c;
     });
 
@@ -369,7 +373,7 @@
       const stick = parseFloat(getComputedStyle(c.stage).top) || 0;
       const p = reduce ? 1 : part(stick - r.top, 0, c.el.offsetHeight - H);
       const T = c.api.T, SHOWN = T.total - T.rest - T.out;
-      const phone = W < 600, ZMAX = phone ? 2.1 : 2.6;
+      const phone = W < 600;
 
       // ① 카드 → 무대 가득 (00장은 처음부터 가득)
       const a = c.open ? 1 : io(part(p, 0, .25));
@@ -384,12 +388,12 @@
       }
       if (c.hint) c.hint.style.opacity = c.state === 'done' ? (1 - part(p, 0, .05)).toFixed(3) : '0';
 
-      // ② 인트로: 재생을 시작한 뒤 흐른 시간이 t(끝 장면에서 멈춤). 상자가 스파인으로 바뀌는 동안 확대가 풀려 다 펼친 로고는 제 크기
+      // ② 인트로: 재생을 시작한 뒤 흐른 시간이 t(끝 장면에서 멈춤). 큰 상자에서 스파인·로고로 바뀌는 건 부품이 제 크기로 그림
       let t = 0;
       if (c.state === 'play') { t = Math.min(now - c.t0, SHOWN); if (t >= SHOWN) c.state = 'done'; }
       else if (c.state === 'done') t = SHOWN;
-      const morph = io(part(t, T.hold, T.hold + T.morph));
-      let z = 1 + (ZMAX - 1) * (c.open ? 0 : a) * (1 - morph);
+      // ① 의 확대: 카드일 때 1/zmax(상자가 카드 크기) → 다 커지면 1
+      let z = 1 / c.zmax + (1 - 1 / c.zmax) * a;
 
       // ③ 작아지며 위로: 로고 폭을 min(420px, 무대 70%)로, 가운데를 무대 높이 30% 자리로 (재생 중이면 재생은 그대로 이어짐)
       const s = io(part(p, c.k.s0, c.k.s1));
